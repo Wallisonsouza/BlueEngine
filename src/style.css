@@ -1,0 +1,22 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+body {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+}
+
+#canvas {
+  flex: 1;
+  background-color: rgb(107, 99, 99);
+} 
+
+#fps {
+  position: absolute;
+  background-color: aliceblue;
+}
