@@ -1,6 +1,6 @@
 import GameObject from "../components/GameObject";
 import Transform from "../graphycs/Transform";
-import { NullReferenceException } from "../static/Error";
+import { NullReferenceException as NullReferenceExceptionError } from "../static/Error";
 import Entity from "./Entity";
 
 export default class Component extends Entity {
@@ -12,14 +12,14 @@ export default class Component extends Entity {
 
     public get gameObject(): GameObject | null {
         if(!this.priv_gameObject) {
-            throw new NullReferenceException("GameObject não está atribuído.");
+            throw new NullReferenceExceptionError("GameObject não está atribuído.");
         }
         return this.priv_gameObject;
     }
 
     public get transform(): Transform {
         if (!this.priv_gameObject) {
-            throw new NullReferenceException("GameObject não está atribuído. Não é possível acessar o transform.");
+            throw new NullReferenceExceptionError("GameObject não está atribuído. Não é possível acessar o transform.");
         }
 
         return this.priv_gameObject.transform;

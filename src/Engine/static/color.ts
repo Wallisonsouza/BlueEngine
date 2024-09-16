@@ -4,6 +4,8 @@ export default class Color {
     public b: number;
     public a: number;
 
+    //#region Getters 
+
     public static get white(): Color {
         return new Color(1, 1, 1, 1);
     }
@@ -64,7 +66,9 @@ export default class Color {
         return new Color(0.25, 0.25, 0.25, 1);
     }
 
-    constructor(r: number, g: number, b: number, a: number) {
+    //#endregion
+
+    constructor(r: number, g: number, b: number, a: number = 1.0) {
         this.r = Math.max(0, Math.min(r, 1));
         this.g = Math.max(0, Math.min(g, 1));
         this.b = Math.max(0, Math.min(b, 1));

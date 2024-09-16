@@ -92,6 +92,8 @@ hierarchy.addGameObject(square);
 hierarchy.addGameObject(camera);
 
 
+
+
 // function loop(){
     
 //     if(c){

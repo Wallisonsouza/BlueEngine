@@ -6,23 +6,8 @@ export class Material {
     
     public shader: Shader | null = null;
     public color: Color = Color.white; 
-    // public texture: WebGLTexture | null = null;
     public tiling: Vector2 = Vector2.one;
     public offset: Vector2 = Vector2.zero;
-
-    // setTexture(imageUrl: string): void {
-
-    //     const gl = (EngineCache.getRenderingAPI() as WebGL2Api).context;
-    //     const newTexture = this.createTexture(gl, imageUrl);
-    //     if (newTexture) {
-    //         if (this.texture) {
-    //             gl.deleteTexture(this.texture); 
-    //         }
-    //         this.texture = newTexture;
-    //     }
-    // }
-
-   
 
     public setTiling(value: Vector2){
         this.tiling = value;
