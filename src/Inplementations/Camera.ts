@@ -5,7 +5,7 @@ import Ray from "../Base/Mathf/Ray";
 import Component from "../Engine/components/Component";
 import Gizmos from "../Engine/graphycs/Gizmos";
 import Color from "../Engine/static/color";
-import { CameraGizmos } from "../engine_visual/CameraGizmos";
+// import { CameraGizmos } from "../engine_visual/CameraGizmos";
 import { Main, WindowScreen } from "../main";
 
 
@@ -14,16 +14,16 @@ export default class Camera extends Component {
     static main: Main;
     fieldOfView: number = 60;
     aspectRatio: number = 16 / 9;
-    nearPlane: number = 0.3;
+    nearPlane: number = 0.03;
     farPlane: number = 1000;
     depth: boolean = true;
-    clearColor: Color = Color.black;
+    clearColor: Color = Color.darkGray;
 
     constructor(){
         super("Camera");
     }
 
-    get worldCameraMatrix(): Matrix4x4 {
+    get viewMatrix(): Matrix4x4 {
         return this.transform.modelMatrix.inverse();
     } 
 
@@ -38,7 +38,7 @@ export default class Camera extends Component {
         const clipSpacePos = new Vector4(clipCoords.x, clipCoords.y, 1.0, 1.0);
     
         const projectionMatrix = this.projectionMatrix;
-        const viewMatrix = this.worldCameraMatrix;
+        const viewMatrix = this.viewMatrix;
     
         // Passo 4: Calcular a inversa da matriz de projeção
         const inverseProjectionMatrix = projectionMatrix.inverse();
@@ -48,7 +48,7 @@ export default class Camera extends Component {
         const cameraCoords = inverseProjectionMatrix.multiplyVec4(clipSpacePos).perspectiveDivide();
     
         // Passo 6: Transformar a direção do raio do espaço da câmera para o espaço do mundo
-        const rayDirectionWorld = inverseViewMatrix.multiplyVec3(cameraCoords).normalize();
+        const rayDirectionWorld = inverseViewMatrix.multiplyVec3(cameraCoords);
     
         const rayOriginWorld = this.transform.position;
     
@@ -57,8 +57,8 @@ export default class Camera extends Component {
     }
 
     drawGizmos(): void {
-        Gizmos.color = Color.white;
-        CameraGizmos.drawPerspectiveGizmos(this);
+        // Gizmos.color = Color.white;
+        // CameraGizmos.drawPerspectiveGizmos(this);
     }
 
 }    

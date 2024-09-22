@@ -12,6 +12,7 @@ import { IRenderingApi } from "../global";
 import ServiceLocator from "./graphycs/ServiceLocator";
 import MeshBuilder from "./graphycs/MeshFactory";
 import Camera from "../Inplementations/Camera";
+import Material3D from "../Engine2D/Material/Material3D";
 
 export default class Engine {
 
@@ -21,16 +22,16 @@ export default class Engine {
     fps: HTMLElement = document.getElementById("fps") as HTMLElement;
 
     constructor(API: IRenderingApi) {
+
+        ServiceLocator.register('RenderingApi', API);
+        ServiceLocator.register('ActiveCamera', Camera.main.camera);
+
         this.time = new Time(
             this.awake.bind(this),
             this.start.bind(this),
             this.update.bind(this),
             this.fixedUpdate.bind(this)
         );
-
-        ServiceLocator.register('RenderingApi', API);
-        ServiceLocator.register('ActiveCamera', Camera.main.camera);
-       
         
         this.renderingAPI = API;
         EngineCache.setRenderingAPI(API);
@@ -38,24 +39,38 @@ export default class Engine {
     }
 
     public async load(){
-        await Promise.all([
 
-            DefaultValues.shader2D = await Shader.createShaderAsync(
-                "./src/Shader/2D/Mesh/defaultShader2D.vert",
-                "./src/Shader/2D/Mesh/defaultShader2D.frag"
-            ),
-    
-            DefaultValues.gizmosShader = await Shader.createShaderAsync(
-               "./src/Shader/2D/Gizmos/defaultGizmosShader.vert",
-                "./src/Shader/2D/Gizmos/defaultGizmosShader.frag"
-            ),
-    
-            DefaultValues.lineShader2D = await Shader.createShaderAsync(
-                "./src/Shader/2D/Line/defaultLineShader.vert",
-                "./src/Shader/2D/Line/defaultLineShader.frag"
-            ),
-        ]);
+        try {
+            await Promise.all([
 
+                DefaultValues.shader2D = await Shader.createShaderAsync(
+                    "/shaders/defaultShader2D.vert",
+                    "/shaders/defaultShader2D.frag"
+                ),
+        
+                DefaultValues.gizmosShader = await Shader.createShaderAsync(
+                   "/shaders/defaultGizmosShader.vert",
+                    "/shaders/defaultGizmosShader.frag"
+                ),
+        
+                DefaultValues.lineShader2D = await Shader.createShaderAsync(
+                    "/shaders/defaultLineShader.vert",
+                    "/shaders/defaultLineShader.frag"
+                ),
+    
+                DefaultValues.shader3D = await Shader.createShaderAsync(
+                    "/shaders/defaultShader3D.vert",
+                    "/shaders/defaultShader3D.frag"
+                ),
+
+            ]);
+        } 
+        catch (e) {
+            console.error("erro no loader", e);
+        }
+       
+       
+        ServiceLocator.register("Shader3D", DefaultValues.shader3D);
         ServiceLocator.register('LineShader', DefaultValues.lineShader2D);
         ServiceLocator.register('CubeMesh', MeshBuilder.createCube());
         ServiceLocator.register('MainCamera', Camera.main.camera);

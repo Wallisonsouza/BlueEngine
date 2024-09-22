@@ -245,63 +245,7 @@ export default class Matrix4x4 {
     }
 
     public inverse(): Matrix4x4 {
-        const data = this.getData();
-        const identity = Matrix4x4.identity().getData();
-        const matrix = new Float32Array(data);
-       
-        for (let i = 0; i < 4; i++) {
-            
-            let pivotIndex = i;
-            let maxVal = Math.abs(matrix[i * 4 + i]);
-    
-            for (let j = i + 1; j < 4; j++) {
-                const val = Math.abs(matrix[j * 4 + i]);
-                if (val > maxVal) {
-                    maxVal = val;
-                    pivotIndex = j;
-                }
-            }
-    
-            if (pivotIndex !== i) {
-                for (let k = 0; k < 4; k++) {
-                    const temp = matrix[i * 4 + k];
-                    matrix[i * 4 + k] = matrix[pivotIndex * 4 + k];
-                    matrix[pivotIndex * 4 + k] = temp;
-    
-                    const tempIdentity = identity[i * 4 + k];
-                    identity[i * 4 + k] = identity[pivotIndex * 4 + k];
-                    identity[pivotIndex * 4 + k] = tempIdentity;
-                }
-            }
-    
-            const pivotValue = matrix[i * 4 + i];
-            if (pivotValue === 0) {
-                console.error("A matriz não é inversível");
-                return Matrix4x4.identity(); 
-            }
-    
-            for (let j = 0; j < 4; j++) {
-                matrix[i * 4 + j] /= pivotValue;
-                identity[i * 4 + j] /= pivotValue;
-            }
-    
-            for (let j = 0; j < 4; j++) {
-                if (j !== i) {
-                    const factor = matrix[j * 4 + i];
-                    for (let k = 0; k < 4; k++) {
-                        matrix[j * 4 + k] -= factor * matrix[i * 4 + k];
-                        identity[j * 4 + k] -= factor * identity[i * 4 + k];
-                    }
-                }
-            }
-        }
-    
-        return new Matrix4x4(
-            identity[0], identity[1], identity[2], identity[3],
-            identity[4], identity[5], identity[6], identity[7],
-            identity[8], identity[9], identity[10], identity[11],
-            identity[12], identity[13], identity[14], identity[15]
-        );
+       return Matrix4x4.inverse(this);
     }
     
     public static createModelMatrix(translation: Vector3, rotation: Quaternion, scale: Vector3): Matrix4x4 {

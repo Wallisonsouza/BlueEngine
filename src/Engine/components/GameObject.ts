@@ -20,6 +20,7 @@ export default class GameObject extends Entity {
         this.tag = tag || "Untagged";
         this.layer = layer || 0;
         this.active = active ?? true; 
+        this.transform.setGameObject(this);
     }
 
     /**

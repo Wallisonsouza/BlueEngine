@@ -29,7 +29,7 @@ export default class CameraController {
 
     private handleInput(camera: Camera, deltaTime: number): void {
         if (Input.getMouseButton(2)) {
-            const delta = Input.getMouseMovement();
+            const delta = Input.mouseDelta;
             this.cameraRotation.y -= delta.x * this.rotationSpeed;
             this.cameraRotation.x -= delta.y * this.rotationSpeed;
         }

@@ -1,16 +1,19 @@
 import Vector3 from '../engine_modules/vectors/Vector3';
 import GameObject from './Engine/components/GameObject';
 import Engine from './Engine/engine';
-import EntityBuilder from './Engine/graphycs/EntityBuilder';
 import Mesh, { WebGL2Api as WebGL2Api } from './Engine/graphycs/Mesh';
 import SceneManager from './Engine/Managers/SceneManager';
 import ScryptManager from './Engine/Managers/ScryptManager';
+import Material3D from './Engine2D/Material/Material3D';
 import Events from './Events';
 import Camera from './Inplementations/Camera';
-import SelectObjectInScene from './SelectObjectInScene';
 import { Shader } from './Shader/Shader';
 import SimpleEngine from './SimpleEngine';
 import './style.css';
+import Inport from '../engine_plugins/obj-looader/ImportObjFormat';
+import ObjFormart from '../engine_plugins/obj-looader/ObjFormat';
+import MeshRenderer from './Engine/graphycs/MeshRenderer';
+
 
 export class WindowScreen {
     private static width: number;
@@ -44,7 +47,7 @@ export class Main {
         const g = new GameObject();
         this.camera = new Camera();
         this.camera.setGameObject(g);
-        this.camera.farPlane = 2000;
+        this.camera.farPlane = 1000;
     }
 }
 
@@ -60,66 +63,65 @@ export class DefaultValues {
     public static gizmosShader: Shader;
     public static cubeMesh: Mesh;
     public static lineShader2D: Shader;
+    public static shader3D: Shader;
 }
 
 if (!canvas) {
     console.error("Elemento canvas não encontrado.");
 }
 
-const gl2 = canvas.getContext("webgl2") as WebGL2RenderingContext;
+const gl2 = canvas.getContext("webgl2", { preserveDrawingBuffer: true, depth: true, antialias: true, }) as WebGL2RenderingContext;
 
 if (!gl2) {
     console.error("Não foi possível obter o contexto WebGL2.");
 }
 
+ScryptManager.addNewScrypt(new SimpleEngine());
+
 const api = new WebGL2Api(gl2);
 const engine = new Engine(api);
 
-ScryptManager.addNewScrypt(new SelectObjectInScene());
-ScryptManager.addNewScrypt(new SimpleEngine());
 
 await engine.load();
 engine.initialize();
 
 
 const scene = SceneManager.getCurrentScene();
-const square = EntityBuilder.createSquare();
-const camera = EntityBuilder.createCamera();
-
 const hierarchy = scene.getHierarchy();
 
-hierarchy.addGameObject(square);
-hierarchy.addGameObject(camera);
+const objFormat = new Inport("/koenigsegg.obj");
+const objFormatString = await objFormat.loadOBJ();
 
+if (!objFormatString) {
+    console.error("Failed to load OBJ format.");
+   
+}
 
+const shader = await Shader.createShaderAsync (
+    "/shaders/defaultShader3D.vert",
+    "/shaders/defaultShader3D.frag"
+);
 
+shader.compile();
 
-// function loop(){
-    
-//     if(c){
-        
-//         const ray = editorCamera.screenPointToRay(Input.getMousePosition());
-    
-//         const size = new Vec3(0.5, 0.5, 0.5);
-     
-//         const rotation = Quat.fromEulerAngles(new Vec3(0, root, 0));
+const material = new Material3D();
+material.shader = shader;
 
-//         const endPoint = ray.origin.add(ray.direction.scale(1000));
+await material.setAlbedo("/MabelTexture.png")
 
-//         Gizmos.color = Color.red
-//         Gizmos.drawLine(ray.origin, endPoint)
-    
-//         const point = ray.intersectsRotatedBox(size, rotation);
-//         if(point) {
-//             Gizmos.color = Color.green;
-//         } else {
-//             Gizmos.color = Color.blue;
-//         }
-
-      
-//         requestAnimationFrame(loop)
-//     }
-// }
-
-// loop();
-
+const meshs = ObjFormart.process(objFormatString);
+meshs.forEach(mesh => {
+    const gameObject = new GameObject();
+    const renderer = new MeshRenderer();
+    const engineMesh = new Mesh();
+    engineMesh.vertices = mesh.verticesFloat32();
+    engineMesh.normals = mesh.normalsFloat32();
+    engineMesh.indices = mesh.vertexIndicesUint16();
+    engineMesh.uvs = mesh.textureFloat32();
+  
+    engineMesh.compile();
+    renderer.mesh = engineMesh;
+    renderer.material = material;
+    gameObject.addComponentInstance(renderer);
+    hierarchy.addGameObject(gameObject);
+});

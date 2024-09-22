@@ -23,7 +23,7 @@ export default class SpriteRenderer2D extends Renderer {
         this.material.shader.use();
 
         const model = transform.modelMatrix;
-        const view = camera.worldCameraMatrix;
+        const view = camera.viewMatrix;
         const projection = camera.projectionMatrix;
     
         this.material.shader.setUniformMatrix4fv("u_modelMatrix", model);
@@ -69,7 +69,7 @@ export default class SpriteRenderer2D extends Renderer {
         gl.bindTexture(gl.TEXTURE_2D, null);
 
         gl.disable(gl.BLEND);
-        this.light.drawGizmos();
+        // this.light.drawGizmos();
     }
 }
 

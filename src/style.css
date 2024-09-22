@@ -13,7 +13,6 @@ body {
 
 #canvas {
   flex: 1;
-  background-color: rgb(107, 99, 99);
 } 
 
 #fps {

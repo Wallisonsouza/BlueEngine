@@ -14,13 +14,11 @@ export default class Input {
         MouseInput.clear();
     }
 
-    public static getMousePosition(): Vector3 {
-
-        const pos = MouseInput.getPosition();
-        return  new Vector3(pos.x, pos.y, 0);
+    public static get mousePosition(): Vector3 {
+        return MouseInput.getPosition();
     }
 
-    public static getMouseMovement(): { x: number, y: number } {
+    public static get mouseDelta(): Vector3 {
         return MouseInput.getMovement();
     }
 

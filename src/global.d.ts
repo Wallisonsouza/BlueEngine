@@ -30,6 +30,7 @@ export interface IRenderingApi {
      * @returns O buffer de UVs criado ou `null` caso a criação falhe.
      */
     createUVBuffer(data: Float32Array | null): WebGLBuffer | null;
+    createColorBuffer(data: Float32Array | null): WebGLBuffer | null;
 
     /**
      * Obtém a instância atual do contexto WebGL2 para renderização.

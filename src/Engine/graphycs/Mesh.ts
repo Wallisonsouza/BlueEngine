@@ -1,4 +1,5 @@
 import { IMeshBuffers, IMeshData, IRenderingApi } from "../../global";
+import Color from "../static/color";
 import EngineCache from "../static/EngineCache";
 import { ShaderError} from "../static/Error";
 
@@ -51,6 +52,7 @@ export class WebGL2Api implements IRenderingApi {
     
         this.context.bindBuffer(target, buffer);
         this.context.bufferData(target, data, usage);
+        this.context.bindBuffer(target, null);
         return buffer;
     }
     
@@ -86,6 +88,15 @@ export class WebGL2Api implements IRenderingApi {
         }
     }
 
+       createColorBuffer(data: Float32Array | null): WebGLBuffer | null {
+        try {
+            return this.createBuffer(data, this.context.ARRAY_BUFFER, this.context.STATIC_DRAW);
+        } catch (error) {
+            handleBufferCreationError("createNormalBuffer", this.context.ARRAY_BUFFER, this.context.STATIC_DRAW, error);
+        }
+    }
+    
+
     getRenderInstance(): WebGL2RenderingContext {
         return this.context;
     }
@@ -101,6 +112,7 @@ export default class Mesh implements IMeshData, IMeshBuffers {
    indexBuffer: WebGLBuffer | null = null;
    normalBuffer: WebGLBuffer | null = null;
    uvBuffer: WebGLBuffer | null = null;
+   colorBuffer: WebGLBuffer | null = null;
 
     constructor(vertices?: Float32Array, indices?: Uint16Array, normals?: Float32Array, uvs?: Float32Array) {
         this.vertices = vertices || null;
@@ -110,11 +122,12 @@ export default class Mesh implements IMeshData, IMeshBuffers {
     }
 
     compile(): void { 
-
         const API = EngineCache.getRenderingAPI();
         this.vertexBuffer = API.createVertexBuffer(this.vertices);
         this.indexBuffer = API.createIndexBuffer(this.indices);
         this.normalBuffer = API.createNormalBuffer(this.normals);
         this.uvBuffer = API.createUVBuffer(this.uvs);
     }
+
+   
 }  

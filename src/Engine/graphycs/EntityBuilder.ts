@@ -4,6 +4,7 @@ import { Material2D } from "../../Engine2D/Material/Material2D";
 import BoxCollider from "../../Engine2D/Components/BoxCollider";
 import SpriteRenderer2D from "../../Engine2D/Components/SpriteRenderer2D";
 import Camera from "../../Inplementations/Camera";
+import MeshRenderer from "./MeshRenderer";
 
 export default class EntityBuilder {
 
@@ -20,6 +21,7 @@ export default class EntityBuilder {
 
         square.addComponentInstance(spriteRenderer);
         square.addComponent(BoxCollider);
+        square.addComponent(MeshRenderer);
         return square;
     }
 

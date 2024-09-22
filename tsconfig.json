@@ -17,7 +17,14 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
   },
-  "include": ["src", "engine_modules/vectors/Vector3.ts", "engine_modules/matrices/Matrix4x4.ts", "engine_modules/vectors/Quaternion.ts", "engine_modules/vectors/Vector2.ts", "engine_modules/vectors/Vector4.ts"]
+  "include": [
+    "src", 
+    "engine_modules/vectors/Vector3.ts", 
+    "engine_modules/matrices/Matrix4x4.ts", 
+    "engine_modules/vectors/Quaternion.ts", 
+    "engine_modules/vectors/Vector2.ts", 
+    "engine_modules/vectors/Vector4.ts"
+, "engine_plugins/obj-looader/ObjFormat.ts"  ]
 }

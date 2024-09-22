@@ -9,10 +9,10 @@ export default class BoxCollider extends Collider {
     public center: Vector3 = Vector3.zero;
     public size: Vector3 =  new Vector3(0.5, 0.5, 0.5);
     
-    public raycast(ray: Ray, maxDistance: number): Vector3 | null {
+    public raycast(ray: Ray, maxDistance: number = Number.EPSILON): Vector3 | null {
 
         const invRotation = Quaternion.inverse(this.transform.rotation);
-        const localOrigin = Quaternion.multiplyVec3(invRotation, ray.origin.subtract(this.transform.position));
+        const localOrigin = Quaternion.multiplyVec3(invRotation, ray.origin.subtract(this.transform.position.add(this.center)));
         const localDirection = Quaternion.multiplyVec3(invRotation, ray.direction);
     
         if (localDirection.x === 0 && (localOrigin.x < -this.size.x || localOrigin.x > this.size.x)) return null;
@@ -42,16 +42,16 @@ export default class BoxCollider extends Collider {
         if (tmin > tzmax || tzmin > tmax) return null;
     
         const collisionPointLocal = localOrigin.add(localDirection.scale(tmin));
-        const collisionPointGlobal = Quaternion.multiplyVec3(this.transform.rotation, collisionPointLocal).add(this.transform.position);
+        const collisionPointGlobal = Quaternion.multiplyVec3(this.transform.rotation, collisionPointLocal).add(this.transform.position.add(this.center));
     
         return collisionPointGlobal;
     }
     
 
-    public drawGizmos(): void {
-        const worldCenter = this.transform.position.add(this.center);
-        Gizmos.color = this.color;
-        Gizmos.drawWireCube(worldCenter, this.size.scale(2), this.transform.rotation);
-    }
+    // public drawGizmos(): void {
+    //     const worldCenter = this.transform.position.add(this.center);
+    //     Gizmos.color = this.color;
+    //     Gizmos.drawWireCube(worldCenter, this.size.scale(2), this.transform.rotation);
+    // }
     
 }

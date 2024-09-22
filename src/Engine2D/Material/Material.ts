@@ -1,9 +1,9 @@
-import Vector2 from "../../engine_modules/vectors/Vector2";
-import Color from "../Engine/static/color";
-import { Shader } from "../Shader/Shader";
+import Vector2 from "../../../engine_modules/vectors/Vector2";
+import Color from "../../Engine/static/color";
+import { Shader } from "../../Shader/Shader";
 
-export class Material {
-    
+export default class Material {
+    name: string = "";
     public shader: Shader | null = null;
     public color: Color = Color.white; 
     public tiling: Vector2 = Vector2.one;
@@ -12,7 +12,6 @@ export class Material {
     public setTiling(value: Vector2){
         this.tiling = value;
     }
-
     public setOffset(value: Vector2){
         this.offset = value;
     }

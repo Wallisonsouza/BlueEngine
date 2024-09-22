@@ -14,6 +14,7 @@ export default class Vector3 {
         return new Vector3(1, 1, 1);
     }
 
+
     public static get forward(): Vector3 {
         return new Vector3(0, 0, 1);
     }
@@ -78,6 +79,10 @@ export default class Vector3 {
         this.z = z;
     }
 
+    degToRad(): Vector3 {
+        return new Vector3(this.x * Math.PI / 180, this.y * Math.PI / 180, this.z* Math.PI / 180);
+    }
+
     add(vector: Vector3): Vector3 {
         return new Vector3(this.x + vector.x, this.y + vector.y, this.z + vector.z);
     }
@@ -88,6 +93,10 @@ export default class Vector3 {
         return Math.abs(this.x - other.x) < tolerance &&
                Math.abs(this.y - other.y) < tolerance &&
                Math.abs(this.z - other.z) < tolerance;
+    }
+
+    lengthSquared(): number {
+        return this.x * this.x + this.y * this.y + this.z * this.z;
     }
 
 

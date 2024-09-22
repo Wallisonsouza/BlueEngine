@@ -1,5 +1,3 @@
-import Gizmos from "../../Engine/graphycs/Gizmos";
-import Quaternion from "../../../engine_modules/vectors/Quaternion";
 import Vector3 from "../../../engine_modules/vectors/Vector3";
 
 export default class Ray {
@@ -8,9 +6,28 @@ export default class Ray {
 
     constructor(origin: Vector3, direction: Vector3) {
         this.origin = origin;
-        this.direction = direction; 
+        this.direction = direction.normalize(); 
     }
-
+        
+    // static rayIntersectsLine(ray: Ray, start: Vector3, end: Vector3): boolean {
+    //     const lineDir = end.subtract(start);
+    //     const rayDir = ray.direction;
+    //     const rayToLineStart = start.subtract(ray.origin);
+    
+    //     const denominator = rayDir.cross(lineDir).magnitude();
+    
+    //     if (denominator === 0) {
+    //         // Linhas paralelas
+    //         return false;
+    //     }
+    
+    //     const t = rayToLineStart.cross(lineDir).magnitude() / denominator;
+    //     const u = rayToLineStart.cross(rayDir).magnitude() / denominator;
+    
+    //     // Verifique se t e u estão dentro dos limites
+    //     return (t >= 0 && t <= 1) && (u >= 0);
+    // }
+    
     // intersectsRotatedBox(size: Vec3,  rotation: Quat, boxPosition: Vec3 = Vec3.zero): Vec3 | null {
        
     //     const invRotation = Quat.inverse(rotation);
@@ -52,4 +69,15 @@ export default class Ray {
     // drawRayAndBox(size: Vec3, rotation: Quat, boxPosition: Vec3 = Vec3.zero) {
     //     Gizmos.drawWireCube(boxPosition, size.scale(2), rotation);
     // }
+
+}
+
+export class LineSegment {
+    start: Vector3;
+    end: Vector3;
+
+    constructor(start: Vector3, end: Vector3) {
+        this.start = start;
+        this.end = end;
+    }
 }

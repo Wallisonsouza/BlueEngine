@@ -11,6 +11,7 @@ export class Shader {
     private fragSource: string;
     private API: IRenderingApi;
     private gl: WebGL2RenderingContext;
+    public name: string = "";
 
     constructor(vertSource: string = "", fragSource: string = ""){
         this.vertSource = vertSource;
@@ -20,8 +21,7 @@ export class Shader {
         this.compile();
     }
 
-    private program: WebGLProgram | null = null;
-    private static currentProgram: WebGLProgram | null = null;
+    public program: WebGLProgram | null = null;
 
     private attributeCache: Map<string, number> = new Map();
     private uniformCache: Map<string, WebGLUniformLocation> = new Map();
@@ -45,26 +45,20 @@ export class Shader {
     }
 
     public use(): void {
-        if (Shader.currentProgram !== this.program) {
+        if (this.program) {
             this.gl.useProgram(this.program);
-            Shader.currentProgram = this.program;
         }
     }
 
     public deactivate(): void {
-        if (Shader.currentProgram === this.program) {
-            this.gl.useProgram(null);
-            Shader.currentProgram = null;
-        }
+        this.gl.useProgram(null);
     }
 
-    public setUniform2f(name: string, x: number, y: number): string {
+    public setUniform2f(name: string, x: number, y: number) {
         const location = this.getUniformLocation(name);
         if (location) {
             this.gl.uniform2f(location, x, y);
         }
-
-        return `uniform vec2 ${name};`
     }
     public setUniform3f(name: string, x: number, y: number, z: number) {
         const location = this.getUniformLocation(name);
@@ -126,7 +120,8 @@ export class Shader {
             if (!(matrix instanceof Float32Array)) {
                 matrix = matrix.getData();
             }
-            this.gl.uniformMatrix4fv(location, transpose, matrix);
+            this.gl.uniformMatrix4fv(location, transpose, matrix);  
+        
         }
     }
     
@@ -141,6 +136,15 @@ export class Shader {
         const location = this.getUniformLocation(name);
         if (location) {
             this.gl.uniform4fv(location, value);
+        }
+    }
+
+    public setSample2d(name: string, texture: WebGLTexture, textureUnit: number = 0) {
+        const location = this.getUniformLocation(name);
+        if(location) {
+            this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+            this.gl.uniform1i(location, textureUnit);
         }
     }
 
@@ -226,19 +230,66 @@ export class Shader {
         }
     }
 
-    public static async loadShaderAsync(shaderGLSL: string) {
-        const shaderSource = await fetch(shaderGLSL)
-        .then(response => response.text());
-        return shaderSource;
+    public static async loadShaderAsync(shaderGLSL: string): Promise<string> {
+        if (!shaderGLSL.trim()) {
+            throw new Error("Shader source URL is empty or whitespace.");
+        }
+    
+        try {
+            const response = await fetch(shaderGLSL);
+            if (!response.ok) {
+                throw new Error(`Failed to load shader file: ${response.statusText}`);
+            }
+            const shaderSource = await response.text();
+           
+            return shaderSource;
+        } catch (error) {
+            console.error('Error loading shader:', error);
+            throw error;
+        }
     }
+    
 
-    public static async createShaderAsync(vertSource: string, fragSource: string) {
-        const vert = await fetch(vertSource)
-        .then(response => response.text());
-
-        const frag = await fetch(fragSource)
-        .then(response => response.text());
-
-        return new Shader(vert, frag);
+    public static async createShaderAsync(vertSource: string, fragSource: string): Promise<Shader> {
+        
+        try {
+        
+            const vert = await Shader.loadShaderAsync(vertSource);
+            const frag = await Shader.loadShaderAsync(fragSource);
+    
+            return new Shader(vert, frag);
+        } catch (error) {
+            console.error('Error creating shader:', error);
+            throw error; 
+        }
     }
+    
+}
+
+export enum AttributesLocation {
+    VertexPosition = "a_position",
+    VERTEX_POSITION = "VERTEX_POSITION",
+    VERTEX_NORMAL = "VERTEX_NORMAL",
+
+}
+
+export enum UniformsLocation {
+    ObjectModelMatrix = "u_modelMatrix",
+    ObjectColor = "u_color",
+    CameraProjectionMatrix = "u_projectionMatrix",
+    CameraViewMatrix = "u_viewMatrix",
+
+    OBJECT_COLOR = "OBJECT_COLOR",
+    MODEL_MATRIX = "MODEL_MATRIX",
+    PROJECTION_MATRIX = "PROJECTION_MATRIX",
+    VIEW_MATRIX = "VIEW_MATRIX",
+    CAMERA_POSITION = "CAMERA_POSITION",
+    LIGHT_POSITION = "LIGHT_POSITION",
+    WORLD_NORMAL_MATRIX = "WORLD_NORMAL_MATRIX",
+    CAMERA_DIRECTION = "CAMERA_DIRECTION",
+
+    DIFFUSE = "DIFFUSE",
+    SPECULAR = "SPECULAR",
+    METALIC = "METALIC",
+    SMOOTHNESS = "SMOOTHNESS",
 }

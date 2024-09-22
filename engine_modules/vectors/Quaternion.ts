@@ -12,7 +12,6 @@ export default class Quaternion {
         return new Quaternion(0, 0, 0, 1);
     }
     
-    public static readonly zero = new Quaternion(0, 0, 0, 0)
     constructor(x: number = 0, y: number = 0, z: number = 0, w: number = 1){
         this.x = x;
         this.y = y;
@@ -22,12 +21,10 @@ export default class Quaternion {
   
 
     public static fromEulerAngles(vector: Vector3): Quaternion {
-        // Convertendo ângulos de graus para radianos
         const rollRad = Mathf.degToRad(vector.x) * 0.5;
         const pitchRad = Mathf.degToRad(vector.y) * 0.5;
         const yawRad = Mathf.degToRad(vector.z) * 0.5;
-    
-        // Calculando os senos e cossenos
+ 
         const sinRoll = Mathf.sin(rollRad);
         const cosRoll = Mathf.cos(rollRad);
         const sinPitch = Mathf.sin(pitchRad);
@@ -35,15 +32,14 @@ export default class Quaternion {
         const sinYaw = Mathf.sin(yawRad);
         const cosYaw = Mathf.cos(yawRad);
     
-        // Calculando os componentes do quaternion
         const x = cosPitch * sinRoll * cosYaw - cosRoll * sinPitch * sinYaw;
         const y = cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw;
         const z = cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw;
         const w = cosRoll * cosPitch * cosYaw + sinRoll * sinPitch * sinYaw;
     
-        // Retornando o quaternion
         return new Quaternion(x, y, z, w);
     }
+
     public static slerp(a: Quaternion, b: Quaternion, t: number): Quaternion {
         let dot = Quaternion.dot(a, b);
 
@@ -82,7 +78,7 @@ export default class Quaternion {
     public static normalize(quat: Quaternion, epsilon: number = 1e-6): Quaternion {
         const length = Quaternion.length(quat);
         if (length < epsilon) {
-            return new Quaternion(0, 0, 0, 1);
+            return Quaternion.identity;
         }
 
         const invNorm = 1 / length;
@@ -133,7 +129,7 @@ export default class Quaternion {
         return new Vector3(finalQuat.x, finalQuat.y, finalQuat.z);
     }
 
-    public multiplyVec3(v: Vector3): Vector3 {
+    public multiplyVector3(v: Vector3): Vector3 {
         return Quaternion.multiplyVec3(this, v);
     }
     //--------------TESTADOS E OTIMIZADOS-----------------------------------------
@@ -205,14 +201,20 @@ export default class Quaternion {
         );
     }
     
-    multiplyQuat(q: Quaternion): Quaternion {
-        return new Quaternion(
-            this.w * q.x + this.x * q.w + this.y * q.z - this.z * q.y,
-            this.w * q.y - this.x * q.z + this.y * q.w + this.z * q.x,
-            this.w * q.z + this.x * q.y - this.y * q.x + this.z * q.w,
-            this.w * q.w - this.x * q.x - this.y * q.y - this.z * q.z
-        );
+    multiplyQuat(q: Quaternion): this {
+        const x = this.w * q.x + this.x * q.w + this.y * q.z - this.z * q.y;
+        const y = this.w * q.y - this.x * q.z + this.y * q.w + this.z * q.x;
+        const z = this.w * q.z + this.x * q.y - this.y * q.x + this.z * q.w;
+        const w = this.w * q.w - this.x * q.x - this.y * q.y - this.z * q.z;
+    
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
+    
+        return this;
     }
+    
 
     public toVec3(){
         return new Vector3(this.x, this.y, this.z);

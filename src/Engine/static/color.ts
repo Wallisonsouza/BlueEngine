@@ -7,7 +7,7 @@ export default class Color {
     //#region Getters 
 
     public static get white(): Color {
-        return new Color(1, 1, 1, 1);
+        return new Color(1.0, 1.0, 1.0, 1.0);
     }
 
     public static get black(): Color {
@@ -121,4 +121,20 @@ export default class Color {
             this.a * (1 - factor) + other.a * factor
         );
     }
+
+    public static random(min: number = 0, max: number = 1, includeAlpha: boolean = false): Color {
+        const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+        const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+        const r = clamp(randomInRange(min, max), 0, 1);
+        const g = clamp(randomInRange(min, max), 0, 1);
+        const b = clamp(randomInRange(min, max), 0, 1);
+        const a = includeAlpha ? clamp(randomInRange(min, max), 0, 1) : 1;
+
+        return new Color(r, g, b, a);
+    }
+    public rgbArray(){
+        return [this.r, this.g, this.b];
+    }
+
 }

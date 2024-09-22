@@ -6,9 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quasaris Egine</title>
   </head>
-  <body>
-    <div id="app"></div>
 
+  <style>
+    .controls {
+      position: absolute;
+      right:  0;
+      padding: 12px;
+      display:  flex;
+      flex-direction: column;
+    }
+  </style>
+  <body>
+    <div class="controls">
+      <label for="specular">specular:</label>
+      <input type="range" name="" id="specular" min="0" value="1">
+      <label for="smoothness">Smoothness:</label>
+      <input type="range" id="smoothness" min="0" max="100" value="32" step="1">
+    </div>
+   
     <div id="fps"></div>
     <canvas id="canvas"></canvas>
     <script type="module" src="/src/main.ts"></script>

@@ -2,24 +2,25 @@ import Mathf from "../../Base/Mathf/Mathf";
 import { WebGL2Api } from "../../Engine/graphycs/Mesh";
 import EngineCache from "../../Engine/static/EngineCache";
 import Material from "./Material";
-import { DefaultValues } from "../../main";
 
-export class Material2D extends Material {
-    public texture: WebGLTexture | null = null;
-    public image: HTMLImageElement | null = null;
+export default class Material3D  extends Material {
+    public specular: number = 1.0;
+    public metalic: number = 1.0;
+    public smoothness: number = 1.0;
+    public albedo: WebGLTexture | null = null;
+
     
     constructor() {
         super();
-        this.shader = DefaultValues.shader2D;
     }
 
-    async setTexture(imageUrl: string): Promise<void> {
+    async setAlbedo(imageUrl: string): Promise<void> {
         const gl = (EngineCache.getRenderingAPI() as WebGL2Api).context;
-        if (this.texture) {
-            gl.deleteTexture(this.texture);
+        if (this.albedo) {
+            gl.deleteTexture(this.albedo);
         }
 
-        this.texture = await this.createTexture(gl, imageUrl);
+        this.albedo = await this.createTexture(gl, imageUrl);
     }
 
     private async createTexture(gl: WebGLRenderingContext, imageUrl: string): Promise<WebGLTexture | null> {
@@ -78,6 +79,4 @@ export class Material2D extends Material {
             return null;
         }
     }
-
-  
 }

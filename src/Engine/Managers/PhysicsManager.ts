@@ -11,33 +11,32 @@ import Camera from "../../Inplementations/Camera";
 export default class PhysicsManager {
 
     public static fixedUpdate(){
-        const API = EngineCache.getRenderingAPI();
+        // const API = EngineCache.getRenderingAPI();
 
-        if (API instanceof WebGL2Api) {
+        // if (API instanceof WebGL2Api) {
 
-            const camera = ServiceLocator.get<Camera>("ActiveCamera");
-            const currentScene = SceneManager.getCurrentScene();
-            const sceneHierarchy = currentScene.getHierarchy();
-            const gameEntities = sceneHierarchy.getGameObjects();
+        //     const camera = ServiceLocator.get<Camera>("ActiveCamera");
+        //     const currentScene = SceneManager.getCurrentScene();
+        //     const sceneHierarchy = currentScene.getHierarchy();
+        //     const gameEntities = sceneHierarchy.getGameObjects();
 
-            gameEntities.forEach(entity => {
-                if (!entity.active) {
-                    return;
-                }
+        //     gameEntities.forEach(entity => {
+        //         if (!entity.active) {
+        //             return;
+        //         }
 
-                const coliders = entity.getComponents(Collider);
-                coliders.forEach(collider => {
+        //         const coliders = entity.getComponents(Collider);
+        //         coliders.forEach(collider => {
 
-                    const mousePosition = Input.getMousePosition();
-                    const ray = camera.screenPointToRay(mousePosition);
+        //             const ray = camera.screenPointToRay(Input.mousePosition);
                    
-                    if(collider.raycast(ray, Infinity)) {
-                       collider.color = Color.red;
-                    } else {
-                        collider.color = Color.green;
-                    }
-                })
-            });
-        }
+        //             if(collider.raycast(ray, Infinity)) {
+        //                collider.color = Color.red;
+        //             } else {
+        //                 collider.color = Color.green;
+        //             }
+        //         })
+        //     });
+        // }
     }
 }
