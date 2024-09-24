@@ -1,5 +1,4 @@
 import { IMeshBuffers, IMeshData, IRenderingApi } from "../../global";
-import Color from "../static/color";
 import EngineCache from "../static/EngineCache";
 import { ShaderError} from "../static/Error";
 
@@ -128,6 +127,4 @@ export default class Mesh implements IMeshData, IMeshBuffers {
         this.normalBuffer = API.createNormalBuffer(this.normals);
         this.uvBuffer = API.createUVBuffer(this.uvs);
     }
-
-   
 }  

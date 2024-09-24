@@ -7,16 +7,18 @@ import { IRenderingApi } from "../../global";
 import Quaternion from "../../../engine_modules/vectors/Quaternion";
 import Matrix4x4 from "../../../engine_modules/matrices/Matrix4x4";
 import { Shader } from "../../Shader/Shader";
-import Camera from "../../Inplementations/Camera";
+import Camera from "../../components/Camera";
 
 export default class Gizmos {
 
     public static color: Color = Color.white;
     
     private static getApiAndCamera(): [IRenderingApi, Camera] {
+
         const api = ServiceLocator.get<IRenderingApi>('RenderingApi');
         const camera = ServiceLocator.get<Camera>('ActiveCamera');
         return [api, camera];
+
     }
 
     public static drawLine(start: Vector3, end: Vector3) {

@@ -152,7 +152,6 @@ export default class MeshBuilder {
 }
 
 
-
 // public static createCube() {
         
 //     const vertices = new Float32Array([

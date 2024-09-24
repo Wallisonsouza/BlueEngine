@@ -11,7 +11,7 @@ import { Shader } from "../Shader/Shader";
 import { IRenderingApi } from "../global";
 import ServiceLocator from "./graphycs/ServiceLocator";
 import MeshBuilder from "./graphycs/MeshFactory";
-import Camera from "../Inplementations/Camera";
+import Camera from "../components/Camera";
 import Material3D from "../Engine2D/Material/Material3D";
 
 export default class Engine {

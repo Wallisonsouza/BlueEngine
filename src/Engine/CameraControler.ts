@@ -3,7 +3,7 @@ import Quaternion from "../../engine_modules/vectors/Quaternion";
 import Vector3 from "../../engine_modules/vectors/Vector3";
 import { KeyCode } from "./Enum/KeyCode";
 import Input from "../Base/Input/Input";
-import Camera from "../Inplementations/Camera";
+import Camera from "../components/Camera";
 
 export default class CameraController {
     

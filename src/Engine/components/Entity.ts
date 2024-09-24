@@ -1,9 +1,13 @@
 export default class Entity {
-    private static currentId: number = 0;
-    public id: number;
 
+    private _id: number;
+    private static currentId: number = 0;
+
+    public get id(): number {
+        return this._id;
+    }
     constructor() {
-        this.id = Entity.generateId();
+        this._id = Entity.generateId();
     }
 
     private static generateId(): number {

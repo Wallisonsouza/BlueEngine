@@ -1,7 +1,7 @@
 
-import Camera from "../../Inplementations/Camera";
+import Camera from "../../components/Camera";
 import { WebGL2Api } from "../graphycs/Mesh";
-import Renderer from "../graphycs/Renderer";
+import Renderer from "../../components/Renderer";
 import EngineCache from "../static/EngineCache";
 import SceneManager from "./SceneManager";
 
@@ -40,15 +40,14 @@ export default class RendererManager {
 
                     if (component.render) {
                         component.render(API.context, entity.transform, camera);
-                        component.drawGizmos();
+                       
                         
                     } else {
                         console.warn(`Componente ${component} não possui o método 'render'.`);
                     }
-                
-                   
                 });
             });
+            
         } else {
             console.error("API de renderização não é uma instância de WebGL2Api.");
         }

@@ -3,10 +3,10 @@ import Vector3 from "../../engine_modules/vectors/Vector3";
 import Input from "../Base/Input/Input";
 import Ray from "../Base/Mathf/Ray";
 import Gizmos from "../Engine/graphycs/Gizmos";
-import Transform from "../Engine/graphycs/Transform";
+import Transform from "../components/Transform";
 import Color from "../Engine/static/color";
 import BoxCollider from "../Engine2D/Components/BoxCollider";
-import Camera from "../Inplementations/Camera";
+import Camera from "../components/Camera";
 import { WindowScreen } from "../main";
 
 let xCollider = new BoxCollider();

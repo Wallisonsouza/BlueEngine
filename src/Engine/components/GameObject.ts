@@ -1,5 +1,5 @@
-import Transform from "../graphycs/Transform";
-import Component from "./Component";
+import Transform from "../../components/Transform";
+import Component from "../../components/Component";
 import Entity from "./Entity";
 import List from "./List";
 

@@ -1,6 +1,6 @@
-import Renderer from "../../Engine/graphycs/Renderer";
-import Transform from "../../Engine/graphycs/Transform";
-import Camera from "../../Inplementations/Camera";
+import Renderer from "../../components/Renderer";
+import Transform from "../../components/Transform";
+import Camera from "../../components/Camera";
 import { Material2D } from "../Material/Material2D";
 import PointLight2D from "./Light2D";
 import { Sprite2D } from "./Sprite2D";

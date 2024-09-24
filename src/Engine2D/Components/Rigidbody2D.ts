@@ -1,4 +1,4 @@
-import Component from "../../Engine/components/Component";
+import Component from "../../components/Component";
 import Vector2 from "../../../engine_modules/vectors/Vector2";
 import Vector3 from "../../../engine_modules/vectors/Vector3";
 

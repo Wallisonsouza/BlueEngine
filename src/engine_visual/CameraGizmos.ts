@@ -1,6 +1,6 @@
 import Vector3 from "../../engine_modules/vectors/Vector3";
 import Gizmos from "../Engine/graphycs/Gizmos";
-import Camera from "../Inplementations/Camera";
+import Camera from "../components/Camera";
 
 export class CameraGizmos {
 

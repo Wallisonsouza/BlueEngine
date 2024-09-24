@@ -3,7 +3,7 @@ import { Sprite2D } from "../../Engine2D/Components/Sprite2D";
 import { Material2D } from "../../Engine2D/Material/Material2D";
 import BoxCollider from "../../Engine2D/Components/BoxCollider";
 import SpriteRenderer2D from "../../Engine2D/Components/SpriteRenderer2D";
-import Camera from "../../Inplementations/Camera";
+import Camera from "../../components/Camera";
 import MeshRenderer from "./MeshRenderer";
 
 export default class EntityBuilder {

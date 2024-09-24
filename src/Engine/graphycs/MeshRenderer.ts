@@ -1,7 +1,7 @@
 import Mesh from "./Mesh";
-import Renderer from "./Renderer";
-import Transform from "./Transform";
-import Camera from "../../Inplementations/Camera";
+import Renderer from "../../components/Renderer";
+import Transform from "../../components/Transform";
+import Camera from "../../components/Camera";
 import { AttributesLocation as AttributesLocation, UniformsLocation as UniformsLocation, Shader } from "../../Shader/Shader";
 import Material3D from "../../Engine2D/Material/Material3D";
 

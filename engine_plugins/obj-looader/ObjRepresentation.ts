@@ -42,28 +42,7 @@ export class ObjMesh {
     addVertexIndices(v1: number, v2: number, v3: number) {
         this.vertexIndices.push(v1, v2, v3);
     }
-
-    public reorganizeTextures(): void {
-        const newTexture: Vec2[] = [];
-        const newTextureIndices: number[] = [];
-
-        for (let i = 0; i < this.vertexIndices.length; i += 3) {
-            const v1Index = this.vertexIndices[i];
-            const v2Index = this.vertexIndices[i + 1];
-            const v3Index = this.vertexIndices[i + 2];
-
-            // Adiciona as coordenadas de textura correspondentes
-            newTexture.push(this.texture[this.textureIndices[v1Index]]);
-            newTexture.push(this.texture[this.textureIndices[v2Index]]);
-            newTexture.push(this.texture[this.textureIndices[v3Index]]);
-
-            // Adiciona os novos índices de textura
-            newTextureIndices.push(newTexture.length - 3, newTexture.length - 2, newTexture.length - 1);
-        }
-
-        this.texture = newTexture; // Atualiza as coordenadas de textura
-        this.textureIndices = newTextureIndices; // Atualiza os índices de textura
-    }
+   
     public calculateVertexNormals() {
         const vertexNormals: Map<number, Vec3> = new Map();
     
@@ -153,26 +132,19 @@ export class ObjMesh {
         return new Uint16Array(this.textureIndices);
     }
 
-    public organizeTexture(): void {
-        const organizedCoords: Vec2[] = [];
-        this.textureIndices = this.textureIndices.filter(index => index >= 0);
+    public organizeTexture(uvIndices: number[], uvs: Vec2[]): Vec2[] {
+        // Crie um novo array para armazenar as UVs organizadas
+        const organizedUVs: Vec2[] = [];
     
-        for (let i = 0; i < this.textureIndices.length; i++) {
-            const index = this.textureIndices[i];
-            if (index < 0 || index >= this.texture.length) {
-                console.warn(`Índice ${index} fora do intervalo.`);
-                continue; // Ignora índices inválidos
-            }
-            const coord = this.texture[index];
-            organizedCoords.push(new Vec2(coord.x, coord.y));
+        // Percorra os índices de UV e reorganize as UVs com base nesses índices
+        for (let i = 0; i < uvIndices.length; i++) {
+            const uvIndex = uvIndices[i];   // Pega o índice da UV
+            organizedUVs.push(uvs[uvIndex]); // Adiciona a UV correspondente ao array organizado
         }
     
-        this.texture = organizedCoords;
+        // Retorne as UVs reorganizadas
+        return organizedUVs;
     }
-    
-    
-    
-    
 }
 
 export class Vec3 {

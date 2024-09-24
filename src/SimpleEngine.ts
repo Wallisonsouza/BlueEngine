@@ -1,7 +1,7 @@
 import CameraController from "./Engine/CameraControler";
 import MonoComportament from "./Engine/components/MonoComportament";
 import Time from "./Engine/static/Time";
-import Camera from "./Inplementations/Camera";
+import Camera from "./components/Camera";
 
 export default class SimpleEngine extends MonoComportament {
 
@@ -12,7 +12,6 @@ export default class SimpleEngine extends MonoComportament {
     }
 
     public update(): void { 
-
         this.cameraControle.update(Camera.main.camera, Time.deltaTime); 
     }
 }

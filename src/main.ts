@@ -6,7 +6,7 @@ import SceneManager from './Engine/Managers/SceneManager';
 import ScryptManager from './Engine/Managers/ScryptManager';
 import Material3D from './Engine2D/Material/Material3D';
 import Events from './Events';
-import Camera from './Inplementations/Camera';
+import Camera from './components/Camera';
 import { Shader } from './Shader/Shader';
 import SimpleEngine from './SimpleEngine';
 import './style.css';
@@ -107,11 +107,11 @@ shader.compile();
 const material = new Material3D();
 material.shader = shader;
 
-await material.setAlbedo("/MabelTexture.png")
+await material.setAlbedo("/Texture_100Animals_BaseColor.png")
 
-const meshs = ObjFormart.process(objFormatString);
-meshs.forEach(mesh => {
-    const gameObject = new GameObject();
+const mesh = ObjFormart.process(objFormatString);
+
+ const gameObject = new GameObject();
     const renderer = new MeshRenderer();
     const engineMesh = new Mesh();
     engineMesh.vertices = mesh.verticesFloat32();
@@ -124,4 +124,3 @@ meshs.forEach(mesh => {
     renderer.material = material;
     gameObject.addComponentInstance(renderer);
     hierarchy.addGameObject(gameObject);
-});

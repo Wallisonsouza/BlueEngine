@@ -6,7 +6,7 @@ import Collider from "../../Engine2D/Components/Collider";
 import ServiceLocator from "../graphycs/ServiceLocator";
 
 import Color from "../static/color";
-import Camera from "../../Inplementations/Camera";
+import Camera from "../../components/Camera";
 
 export default class PhysicsManager {
 
