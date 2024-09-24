@@ -257,6 +257,14 @@ export class Vec2 {
         });
         return floatArray;
     }
+
+    toString(): string {
+        return `Vec2(${this.x}, ${this.y})`;
+    }
+
+    toJSON(): string {
+        return this.toString(); // Se preferir usar o formato como string
+    }
 }
 
 // export class Material {

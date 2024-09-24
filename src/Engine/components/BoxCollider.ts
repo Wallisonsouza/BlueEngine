@@ -1,8 +1,8 @@
 import Quaternion from "../../../engine_modules/vectors/Quaternion";
 import Ray from "../../Base/Mathf/Ray";
 import Vector3 from "../../../engine_modules/vectors/Vector3";
-import Gizmos from "../../Engine/graphycs/Gizmos";
-import Collider from "./Collider";
+import Gizmos from "../graphycs/Gizmos";
+import Collider from "../../Engine2D/Components/Collider";
 
 export default class BoxCollider extends Collider {
 
@@ -48,10 +48,10 @@ export default class BoxCollider extends Collider {
     }
     
 
-    // public drawGizmos(): void {
-    //     const worldCenter = this.transform.position.add(this.center);
-    //     Gizmos.color = this.color;
-    //     Gizmos.drawWireCube(worldCenter, this.size.scale(2), this.transform.rotation);
-    // }
+    public drawGizmos(): void {
+        const worldCenter = this.transform.position.add(this.center);
+        Gizmos.color = this.color;
+        Gizmos.drawWireCube(worldCenter, this.size.scale(2), this.transform.rotation);
+    }
     
 }

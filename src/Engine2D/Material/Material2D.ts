@@ -1,20 +1,20 @@
 import Mathf from "../../Base/Mathf/Mathf";
 import { WebGL2Api } from "../../Engine/graphycs/Mesh";
-import EngineCache from "../../Engine/static/EngineCache";
 import Material from "./Material";
-import { DefaultValues } from "../../main";
+import ServiceLocator from "../../Engine/graphycs/ServiceLocator";
+import { Shader } from "../../Shader/Shader";
 
 export class Material2D extends Material {
     public texture: WebGLTexture | null = null;
     public image: HTMLImageElement | null = null;
     
     constructor() {
-        super();
-        this.shader = DefaultValues.shader2D;
+        super("new Material2D");
+        this.shader = ServiceLocator.get<Shader>("Shader2D");
     }
 
     async setTexture(imageUrl: string): Promise<void> {
-        const gl = (EngineCache.getRenderingAPI() as WebGL2Api).context;
+        const gl = (ServiceLocator.get("RenderingApi") as WebGL2Api).context;
         if (this.texture) {
             gl.deleteTexture(this.texture);
         }

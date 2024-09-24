@@ -1,9 +1,9 @@
 import Matrix4x4 from "../../engine_modules/matrices/Matrix4x4";
 import Vector2 from "../../engine_modules/vectors/Vector2";
-import EngineCache from "../Engine/static/EngineCache";
 import Vector3 from "../../engine_modules/vectors/Vector3";
 import ShaderUtil from "./Shader.Util";
 import { IRenderingApi } from "../global";
+import ServiceLocator from "../Engine/graphycs/ServiceLocator";
 
 export class Shader {
 
@@ -16,7 +16,7 @@ export class Shader {
     constructor(vertSource: string = "", fragSource: string = ""){
         this.vertSource = vertSource;
         this.fragSource = fragSource;
-        this.API = EngineCache.getRenderingAPI();
+        this.API = ServiceLocator.get<IRenderingApi>("RenderingApi");
         this.gl = this.API.getRenderInstance() as WebGL2RenderingContext;
         this.compile();
     }
@@ -141,11 +141,14 @@ export class Shader {
 
     public setSample2d(name: string, texture: WebGLTexture, textureUnit: number = 0) {
         const location = this.getUniformLocation(name);
-        if(location) {
-            this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
-            this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-            this.gl.uniform1i(location, textureUnit);
+        if (location === null) {
+            console.error(`Uniform location for ${name} not found.`);
+            return;
         }
+
+        this.gl.activeTexture(this.gl.TEXTURE0 + textureUnit);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+        this.gl.uniform1i(location, textureUnit);
     }
 
     private withGlAndProgram<T>(callback: (gl: WebGLRenderingContext, program: WebGLProgram) => T | null): T | null {
@@ -289,7 +292,7 @@ export enum UniformsLocation {
     CAMERA_DIRECTION = "CAMERA_DIRECTION",
 
     DIFFUSE = "DIFFUSE",
-    SPECULAR = "SPECULAR",
+    MATERIAL_SPECULAR = "MATERIAL_SPECULAR",
     METALIC = "METALIC",
     SMOOTHNESS = "SMOOTHNESS",
 }

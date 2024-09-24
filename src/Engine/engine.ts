@@ -4,15 +4,12 @@ import Time from "./static/Time";
 import Input from "../Base/Input/Input";
 import RendererManager from "./Managers/RendererManager";
 import {WebGL2Api} from "./graphycs/Mesh";
-import EngineCache from "./static/EngineCache";
 import PhysicsManager from "./Managers/PhysicsManager";
-import { DefaultValues } from "../main";
 import { Shader } from "../Shader/Shader";
 import { IRenderingApi } from "../global";
 import ServiceLocator from "./graphycs/ServiceLocator";
 import MeshBuilder from "./graphycs/MeshFactory";
 import Camera from "../components/Camera";
-import Material3D from "../Engine2D/Material/Material3D";
 
 export default class Engine {
 
@@ -34,7 +31,6 @@ export default class Engine {
         );
         
         this.renderingAPI = API;
-        EngineCache.setRenderingAPI(API);
         console.info("Engine criada com sucesso");
     }
 
@@ -43,25 +39,20 @@ export default class Engine {
         try {
             await Promise.all([
 
-                DefaultValues.shader2D = await Shader.createShaderAsync(
+                ServiceLocator.register("Shader2D", await Shader.createShaderAsync(
                     "/shaders/defaultShader2D.vert",
                     "/shaders/defaultShader2D.frag"
-                ),
-        
-                DefaultValues.gizmosShader = await Shader.createShaderAsync(
-                   "/shaders/defaultGizmosShader.vert",
-                    "/shaders/defaultGizmosShader.frag"
-                ),
-        
-                DefaultValues.lineShader2D = await Shader.createShaderAsync(
-                    "/shaders/defaultLineShader.vert",
-                    "/shaders/defaultLineShader.frag"
-                ),
-    
-                DefaultValues.shader3D = await Shader.createShaderAsync(
+                )),
+                
+                ServiceLocator.register("Shader3D", await Shader.createShaderAsync(
                     "/shaders/defaultShader3D.vert",
                     "/shaders/defaultShader3D.frag"
-                ),
+                )),
+
+                ServiceLocator.register('LineShader', await Shader.createShaderAsync(
+                    "/shaders/defaultLineShader.vert",
+                    "/shaders/defaultLineShader.frag"
+                )),
 
             ]);
         } 
@@ -69,10 +60,8 @@ export default class Engine {
             console.error("erro no loader", e);
         }
        
-       
-        ServiceLocator.register("Shader3D", DefaultValues.shader3D);
-        ServiceLocator.register('LineShader', DefaultValues.lineShader2D);
         ServiceLocator.register('CubeMesh', MeshBuilder.createCube());
+        ServiceLocator.register('SphereMesh', MeshBuilder.createSphere(1, 16,16));
         ServiceLocator.register('MainCamera', Camera.main.camera);
        
     }

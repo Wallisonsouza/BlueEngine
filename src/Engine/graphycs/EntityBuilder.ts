@@ -1,7 +1,7 @@
 import GameObject from "../components/GameObject";
 import { Sprite2D } from "../../Engine2D/Components/Sprite2D";
 import { Material2D } from "../../Engine2D/Material/Material2D";
-import BoxCollider from "../../Engine2D/Components/BoxCollider";
+import BoxCollider from "../components/BoxCollider";
 import SpriteRenderer2D from "../../Engine2D/Components/SpriteRenderer2D";
 import Camera from "../../components/Camera";
 import MeshRenderer from "./MeshRenderer";
@@ -10,7 +10,7 @@ export default class EntityBuilder {
 
     public static createSquare(): GameObject {
 
-        const square = new GameObject("new square");
+        const square = new GameObject("new Square");
         const spriteRenderer = new SpriteRenderer2D();
         const sprite = new Sprite2D();
         const material = new Material2D();
@@ -27,7 +27,7 @@ export default class EntityBuilder {
 
     public static createCircle(): GameObject {
 
-        const circle = new GameObject("new circle");
+        const circle = new GameObject("new Circle");
         const spriteRenderer = new SpriteRenderer2D();
         const sprite = new Sprite2D();
         const material = new Material2D();
@@ -43,7 +43,7 @@ export default class EntityBuilder {
     }
 
     public static createTriangle(): GameObject {
-        const triangle = new GameObject("new triangle");
+        const triangle = new GameObject("new Triangle");
         const spriteRenderer = new SpriteRenderer2D();
         const sprite = new Sprite2D();
         const material = new Material2D();
@@ -58,7 +58,7 @@ export default class EntityBuilder {
     }
 
     public static createCamera(): GameObject{
-        const camera = new GameObject("new camera");
+        const camera = new GameObject("new Camera");
         const cam = new Camera();
         camera.addComponentInstance(cam);
       

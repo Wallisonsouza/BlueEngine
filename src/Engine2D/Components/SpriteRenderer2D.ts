@@ -7,10 +7,14 @@ import { Sprite2D } from "./Sprite2D";
 
 export default class SpriteRenderer2D extends Renderer {
 
-    public identifier: string = "SpriteRenderer";
+  
     public sprite: Sprite2D | null = null;
     public material: Material2D | null = null;
     light: PointLight2D = new PointLight2D();
+
+    constructor(){
+        super("SpriteRenderer");
+    }
 
     public render(gl: WebGL2RenderingContext, transform: Transform, camera: Camera): void {
         this.renderScene(gl, transform, camera);

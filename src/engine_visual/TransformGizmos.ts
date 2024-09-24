@@ -5,7 +5,7 @@ import Ray from "../Base/Mathf/Ray";
 import Gizmos from "../Engine/graphycs/Gizmos";
 import Transform from "../components/Transform";
 import Color from "../Engine/static/color";
-import BoxCollider from "../Engine2D/Components/BoxCollider";
+import BoxCollider from "../Engine/components/BoxCollider";
 import Camera from "../components/Camera";
 import { WindowScreen } from "../main";
 

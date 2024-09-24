@@ -13,7 +13,7 @@ import './style.css';
 import Inport from '../engine_plugins/obj-looader/ImportObjFormat';
 import ObjFormart from '../engine_plugins/obj-looader/ObjFormat';
 import MeshRenderer from './Engine/graphycs/MeshRenderer';
-
+import BoxCollider from './Engine/components/BoxCollider';
 
 export class WindowScreen {
     private static width: number;
@@ -58,14 +58,6 @@ WindowScreen.setDimensions(canvas.width, canvas.height);
 Events.addBlockResizeEvent();
 Events.addCanvasResizeEvent(canvas);
 
-export class DefaultValues {
-    public static shader2D: Shader;
-    public static gizmosShader: Shader;
-    public static cubeMesh: Mesh;
-    public static lineShader2D: Shader;
-    public static shader3D: Shader;
-}
-
 if (!canvas) {
     console.error("Elemento canvas não encontrado.");
 }
@@ -80,7 +72,6 @@ ScryptManager.addNewScrypt(new SimpleEngine());
 
 const api = new WebGL2Api(gl2);
 const engine = new Engine(api);
-
 
 await engine.load();
 engine.initialize();
@@ -107,20 +98,21 @@ shader.compile();
 const material = new Material3D();
 material.shader = shader;
 
-await material.setAlbedo("/Texture_100Animals_BaseColor.png")
+// await material.setAlbedo("/DragoonEgg_Tex.png");
 
 const mesh = ObjFormart.process(objFormatString);
 
- const gameObject = new GameObject();
-    const renderer = new MeshRenderer();
-    const engineMesh = new Mesh();
-    engineMesh.vertices = mesh.verticesFloat32();
-    engineMesh.normals = mesh.normalsFloat32();
-    engineMesh.indices = mesh.vertexIndicesUint16();
-    engineMesh.uvs = mesh.textureFloat32();
-  
-    engineMesh.compile();
-    renderer.mesh = engineMesh;
-    renderer.material = material;
-    gameObject.addComponentInstance(renderer);
-    hierarchy.addGameObject(gameObject);
+const gameObject = new GameObject();
+const renderer = new MeshRenderer();
+const engineMesh = new Mesh();
+engineMesh.vertices = mesh.verticesFloat32();
+engineMesh.normals = mesh.normalsFloat32();
+engineMesh.indices = mesh.vertexIndicesUint16();
+engineMesh.uvs = mesh.textureFloat32();
+
+engineMesh.compile();
+renderer.mesh = engineMesh;
+renderer.material = material;
+gameObject.addComponentInstance(renderer);
+gameObject.addComponent(BoxCollider);
+hierarchy.addGameObject(gameObject);

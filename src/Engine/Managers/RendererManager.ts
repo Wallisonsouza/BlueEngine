@@ -1,20 +1,22 @@
-
 import Camera from "../../components/Camera";
 import { WebGL2Api } from "../graphycs/Mesh";
-import Renderer from "../../components/Renderer";
-import EngineCache from "../static/EngineCache";
 import SceneManager from "./SceneManager";
+import ServiceLocator from "../graphycs/ServiceLocator";
+import { IRenderingApi } from "../../global";
+import Component from "../../components/Component";
+import MeshRenderer from "../graphycs/MeshRenderer";
+import PointLight from "../../Engine2D/Components/Light";
 
 export default class RendererManager {
 
     public static update(): void {
-        const API = EngineCache.getRenderingAPI();
+        const API = ServiceLocator.get<IRenderingApi>('RenderingApi');
+        const camera = ServiceLocator.get<Camera>('ActiveCamera');
 
         if (API instanceof WebGL2Api) {
             const currentScene = SceneManager.getCurrentScene();
             const sceneHierarchy = currentScene.getHierarchy();
             const gameEntities = sceneHierarchy.getGameObjects();
-            const camera = Camera.main.camera;
 
             if (!camera) {
                 console.error("Camera principal não disponível.");
@@ -29,25 +31,21 @@ export default class RendererManager {
             camera.aspectRatio = window.innerWidth / window.innerHeight;
 
             gameEntities.forEach(entity => {
-                if (!entity.active) {
-                    return;
-                }
+                if (!entity.active) return;
 
-                entity.getComponents(Renderer).forEach(component => {
-                    if (!component.active) {
-                        return;
+                entity.getComponents(Component).forEach(component => {
+                    if (!component.active) return;
+
+                    if(component.identifier === "MeshRenderer") {
+                        const comp = component as MeshRenderer;
+                        comp.render(API.context, entity.transform, camera);
                     }
 
-                    if (component.render) {
-                        component.render(API.context, entity.transform, camera);
-                       
-                        
-                    } else {
-                        console.warn(`Componente ${component} não possui o método 'render'.`);
-                    }
+                    component.drawGizmos();
+                   
                 });
             });
-            
+
         } else {
             console.error("API de renderização não é uma instância de WebGL2Api.");
         }

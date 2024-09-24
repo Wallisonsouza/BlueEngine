@@ -1,4 +1,3 @@
-import { DefaultValues } from "../../main";
 import Vector3 from "../../../engine_modules/vectors/Vector3";
 import Color from "../static/color";
 import Mesh, { WebGL2Api } from "./Mesh";
@@ -36,6 +35,15 @@ export default class Gizmos {
     
         if(api instanceof WebGL2Api) {
             DrawWebGL2.drawWireCube(api.context, center, size, rotation, this.color);
+        } else {
+            console.error("API não reconhecida");
+        }
+    }
+
+    static drawWireSphere(position: Vector3, rotation: Quaternion, radius: number, color: Color): void {
+        const [api, camera] = this.getApiAndCamera();
+        if(api instanceof WebGL2Api) {
+            DrawWebGL2.drawWireSphere(api.context, position, rotation, radius, color);
         } else {
             console.error("API não reconhecida");
         }
@@ -110,9 +118,39 @@ export class DrawWebGL2 {
         shader.setUniform4fv("u_color", color.toArray());
 
         gl2.disable(gl2.DEPTH_TEST);
+        gl2.disable(gl2.CULL_FACE);
         gl2.drawElements(gl2.LINE_LOOP, mesh.indices.length, gl2.UNSIGNED_SHORT, 0);
 
         gl2.bindBuffer(gl2.ARRAY_BUFFER, null);
         gl2.bindBuffer(gl2.ELEMENT_ARRAY_BUFFER, null);
     }
+    static drawWireSphere(gl2: WebGL2RenderingContext, position: Vector3, rotation: Quaternion, radius: number, color: Color): void {
+        const mesh = ServiceLocator.get<Mesh>(DefaultServices.SphereMesh);
+        const shader = ServiceLocator.get<Shader>(DefaultServices.LineShader);
+        const camera = ServiceLocator.get<Camera>(DefaultServices.MainCamera); 
+
+        if (!mesh.vertices || !mesh.indices || !mesh.vertexBuffer || !mesh.indexBuffer) return;
+
+        gl2.bindBuffer(gl2.ARRAY_BUFFER, mesh.vertexBuffer);
+        gl2.bindBuffer(gl2.ELEMENT_ARRAY_BUFFER, mesh.indexBuffer);
+   
+        shader.use();
+
+        shader.enableAttribute3f(gl2, "a_position");
+        shader.setUniformMatrix4fv("u_modelMatrix", Matrix4x4.createModelMatrix(position, rotation, new Vector3(radius, radius, radius)));
+        shader.setUniformMatrix4fv("u_viewMatrix", camera.viewMatrix);
+        shader.setUniformMatrix4fv("u_projectionMatrix", camera.projectionMatrix);
+        shader.setUniform4fv("u_color", color.toArray());
+
+        gl2.enable(gl2.DEPTH_TEST);
+        gl2.depthFunc(gl2.LEQUAL); 
+        gl2.enable(gl2.CULL_FACE); 
+        gl2.cullFace(gl2.BACK);  
+
+        gl2.drawElements(gl2.LINE_STRIP, mesh.indices.length, gl2.UNSIGNED_SHORT, 0);
+
+        gl2.bindBuffer(gl2.ARRAY_BUFFER, null);
+        gl2.bindBuffer(gl2.ELEMENT_ARRAY_BUFFER, null);
+    }
+    
 }

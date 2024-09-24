@@ -1,6 +1,6 @@
 import { IMeshBuffers, IMeshData, IRenderingApi } from "../../global";
-import EngineCache from "../static/EngineCache";
 import { ShaderError} from "../static/Error";
+import ServiceLocator from "./ServiceLocator";
 
 
 function handleBufferCreationError(
@@ -121,7 +121,7 @@ export default class Mesh implements IMeshData, IMeshBuffers {
     }
 
     compile(): void { 
-        const API = EngineCache.getRenderingAPI();
+        const API = ServiceLocator.get<IRenderingApi>("RenderingApi");
         this.vertexBuffer = API.createVertexBuffer(this.vertices);
         this.indexBuffer = API.createIndexBuffer(this.indices);
         this.normalBuffer = API.createNormalBuffer(this.normals);

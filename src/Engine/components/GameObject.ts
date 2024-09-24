@@ -2,6 +2,7 @@ import Transform from "../../components/Transform";
 import Component from "../../components/Component";
 import Entity from "./Entity";
 import List from "./List";
+import { ComponentAlreadyExistsException } from "../static/Error";
 
 export default class GameObject extends Entity {
     
@@ -16,11 +17,12 @@ export default class GameObject extends Entity {
         super();
         
         this.components = new List<Component>();
-        this.name = name || "GameObject";
-        this.tag = tag || "Untagged";
-        this.layer = layer || 0;
+        this.name = name ?? "new GameObject";
+        this.tag = tag ?? "Untagged";
+        this.layer = layer ?? 0;
         this.active = active ?? true; 
         this.transform.setGameObject(this);
+        this.components.add(this.transform);
     }
 
     /**
@@ -28,10 +30,15 @@ export default class GameObject extends Entity {
      * @param componentInstance - A instância do componente a ser adicionado. 
      */
     public addComponentInstance(componentInstance: Component): void {
+
+        if(componentInstance instanceof Transform)  {
+            throw new ComponentAlreadyExistsException(`O componente "${componentInstance.identifier}" ja existe no objeto`);
+        }
+
         if (!this.components.contains(componentInstance)) {
             componentInstance.setGameObject(this);
             this.components.add(componentInstance);
-        }
+        } 
     }
 
     /**
@@ -41,6 +48,8 @@ export default class GameObject extends Entity {
      */
     public addComponent<T extends Component>(type: new () => T): T {
         const component = new type();
+
+       
         this.addComponentInstance(component);
         return component;
     }

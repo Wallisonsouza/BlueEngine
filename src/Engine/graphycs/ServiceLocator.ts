@@ -24,4 +24,5 @@ export enum DefaultServicesLocator {
     LineShader = "LineShader",
     Shader2D = "Shader2D",
     Shader3D = "Shader3D",
+    SphereMesh = "SphereMesh",
 }

@@ -24,7 +24,7 @@ export default class Camera extends Component {
         this.nearPlane = 0.3;
         this.farPlane = 1000;
         this.depth = true;
-        this.clearColor = Color.darkGray;
+        this.clearColor = Color.black;
     }
 
     public get viewMatrix(): Matrix4x4 {

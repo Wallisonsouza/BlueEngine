@@ -1,21 +1,21 @@
 import Mathf from "../../Base/Mathf/Mathf";
 import { WebGL2Api } from "../../Engine/graphycs/Mesh";
-import EngineCache from "../../Engine/static/EngineCache";
+import ServiceLocator from "../../Engine/graphycs/ServiceLocator";
 import Material from "./Material";
 
 export default class Material3D  extends Material {
+
     public specular: number = 1.0;
     public metalic: number = 1.0;
     public smoothness: number = 1.0;
     public albedo: WebGLTexture | null = null;
-
     
     constructor() {
-        super();
+        super("new Material3D");
     }
 
     async setAlbedo(imageUrl: string): Promise<void> {
-        const gl = (EngineCache.getRenderingAPI() as WebGL2Api).context;
+        const gl = (ServiceLocator.get("RenderingApi") as WebGL2Api).context;
         if (this.albedo) {
             gl.deleteTexture(this.albedo);
         }

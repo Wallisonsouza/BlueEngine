@@ -64,3 +64,11 @@ export class NullReferenceException extends Error {
         this.message = `${message}`;
     }
 }
+
+export class ComponentAlreadyExistsException extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "DuplicateComponentException";
+        this.message = `${message}`;
+    }
+}

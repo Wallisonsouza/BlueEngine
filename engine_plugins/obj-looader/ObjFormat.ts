@@ -294,45 +294,53 @@ export default class ObjFormart {
             vertexTriangles: [],
             textureTriangles: []
         };
-
+    
         faces.forEach(face => {
             const vI = face.vertexIndices;
             const vtI = face.textureIndices;
-
+    
             if (vI.length >= 3) {
                 // Triangularização das faces
                 for (let i = 1; i < vI.length - 1; i++) {
                     result.vertexTriangles.push(vI[0], vI[i], vI[i + 1]);
-
-                    // Se as UVs existirem, triangule-as também
-                    if (vtI) {
+    
+                    // Se as UVs existirem e o comprimento for suficiente, triangule-as também
+                    if (vtI && vtI.length >= vI.length) {
                         result.textureTriangles.push(vtI[0], vtI[i], vtI[i + 1]);
+                    } else {
+                        console.warn(`UV indices insuficientes para a face. Adicionando UV padrão.`);
+                        // Aqui você pode adicionar uma UV padrão, se necessário
                     }
                 }
             }
         });
-
+    
         return result;
     }
+    
     private static organizeTexture(uvIndices: number[], uvs: Vec2[]): Vec2[] {
         const organizedUVs: Vec2[] = [];
+        const uniqueUVs = new Map<number, Vec2>();
     
         // Reorganizar com base nos índices
-        for (let i = 0; i < uvIndices.length; i++) {
-            const uvIndex = uvIndices[i];
-    
+        for (const uvIndex of uvIndices) {
             // Verificação do intervalo dos índices
             if (uvIndex < 0 || uvIndex >= uvs.length) {
-                console.warn(`UV index ${uvIndex} está fora do intervalo.`);
+                console.warn(`UV index ${uvIndex} está fora do intervalo. Adicionando UV padrão.`);
                 organizedUVs.push(new Vec2(0, 0)); // Adicionar UV padrão se o índice for inválido
             } else {
-                // Adiciona a UV correspondente
-                organizedUVs.push(uvs[uvIndex]);
+                // Adiciona a UV correspondente se ainda não estiver no map
+                if (!uniqueUVs.has(uvIndex)) {
+                    uniqueUVs.set(uvIndex, uvs[uvIndex]);
+                }
+                organizedUVs.push(uniqueUVs.get(uvIndex)!); // Adiciona a UV correspondente do map
             }
         }
     
         return organizedUVs;
     }
+    
+    
     
 
     static process(value: string) {
@@ -342,12 +350,13 @@ export default class ObjFormart {
        
         objMesh.vertices = this.processVertex(data.v);
         objMesh.normals = this.processNormal(data.vn);
-        objMesh.texture = this.processTexture(data.vt);
+        const textureCoords = this.processTexture(data.vt);
 
         const face = this.processFace(data.f);
         const triangles = this.triangulate(face);
         objMesh.vertexIndices = triangles.vertexTriangles;
-        objMesh.textureIndices = triangles.textureTriangles;
+        const textureIndices = triangles.textureTriangles;
+        objMesh.texture = this.organizeTexture(textureIndices, textureCoords);
         objMesh.calculateVertexNormals();
       
         return objMesh;

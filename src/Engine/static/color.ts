@@ -7,7 +7,7 @@ export default class Color {
     //#region Getters 
 
     public static get white(): Color {
-        return new Color(1.0, 1.0, 1.0, 1.0);
+        return new Color(1, 1, 1, 1);
     }
 
     public static get black(): Color {

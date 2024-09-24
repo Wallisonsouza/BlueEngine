@@ -2,7 +2,6 @@ import Mesh from "./Mesh";
 
 export default class MeshBuilder {
 
- 
     public static createSquare(): Mesh {
                                                       
         const vertices: Float32Array = new Float32Array([
@@ -148,7 +147,55 @@ export default class MeshBuilder {
         return mesh;
     }
 
-
+    public static createSphere(radius: number = 1, widthSegments: number = 32, heightSegments: number = 16): Mesh {
+        const vertices: number[] = [];
+        const normals: number[] = [];
+        const uvs: number[] = [];
+        const indices: number[] = [];
+    
+        for (let latNumber = 0; latNumber <= heightSegments; latNumber++) {
+            const theta = latNumber * Math.PI / heightSegments; // latitude
+            const sinTheta = Math.sin(theta);
+            const cosTheta = Math.cos(theta);
+    
+            for (let longNumber = 0; longNumber <= widthSegments; longNumber++) {
+                const phi = longNumber * 2 * Math.PI / widthSegments; // longitude
+                const sinPhi = Math.sin(phi);
+                const cosPhi = Math.cos(phi);
+    
+                // Cálculo das coordenadas do vértice
+                const x = cosPhi * sinTheta;
+                const y = cosTheta;
+                const z = sinPhi * sinTheta;
+    
+                vertices.push(radius * x, radius * y, radius * z);
+                normals.push(x, y, z); // Normal é igual à posição
+                uvs.push(longNumber / widthSegments, latNumber / heightSegments); // Coordenadas de textura
+            }
+        }
+    
+        // Geração dos índices para formar os triângulos
+        for (let latNumber = 0; latNumber < heightSegments; latNumber++) {
+            for (let longNumber = 0; longNumber < widthSegments; longNumber++) {
+                const first = (latNumber * (widthSegments + 1)) + longNumber;
+                const second = first + widthSegments + 1;
+    
+                // Triângulos
+                indices.push(first, second, first + 1); // Triângulo 1
+                indices.push(second, second + 1, first + 1); // Triângulo 2
+            }
+        }
+    
+        const mesh = new Mesh();
+        mesh.vertices = new Float32Array(vertices);
+        mesh.normals = new Float32Array(normals);
+        mesh.uvs = new Float32Array(uvs);
+        mesh.indices = new Uint16Array(indices);
+        mesh.compile();
+    
+        return mesh;
+    }
+    
 }
 
 
