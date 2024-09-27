@@ -1,148 +1,157 @@
-import Vector2 from "../../../engine_modules/vectors/Vector2";
-import Vector3 from "../../../engine_modules/vectors/Vector3";
 import Mesh from "./Mesh";
 
 export default class MeshBuilder {
 
-    // public static createSquare(): Mesh {
+    public static createSquare(): Mesh {
                                                       
-    //     const vertices: Float32Array = new Float32Array([
-    //         -0.5, -0.5, 0.0, 0.5, -0.5, 0.0,                                
-    //          0.5, 0.5, 0.0, -0.5, 0.5, 0.0                              
-    //     ]);
+        const vertices: Float32Array = new Float32Array([
+            -0.5, -0.5, 0.0, 0.5, -0.5, 0.0,                                
+             0.5, 0.5, 0.0, -0.5, 0.5, 0.0                              
+        ]);
 
-    //     const indices: Uint16Array = new Uint16Array([
-    //         0, 1, 2,  
-    //         2, 3, 0 
-    //     ]);
+        const indices: Uint16Array = new Uint16Array([
+            0, 1, 2,  
+            2, 3, 0 
+        ]);
 
         
-    //     const normal = [0.0, 0.0, 1.0]; 
-    //     const normals: Float32Array = new Float32Array([
-    //         ...normal, // Normal para o Vértice 0
-    //         ...normal, // Normal para o Vértice 1
-    //         ...normal, // Normal para o Vértice 2
-    //         ...normal  // Normal para o Vértice 3
-    //     ]);
+        const normal = [0.0, 0.0, 1.0]; 
+        const normals: Float32Array = new Float32Array([
+            ...normal, // Normal para o Vértice 0
+            ...normal, // Normal para o Vértice 1
+            ...normal, // Normal para o Vértice 2
+            ...normal  // Normal para o Vértice 3
+        ]);
 
-    //     const uvs: Float32Array = new Float32Array([
-    //         0.0, 1.0, // UV para o Vértice 0 
-    //         1.0, 1.0, // UV para o Vértice 1 
-    //         1.0, 0.0, // UV para o Vértice 2
-    //         0.0, 0.0  // UV para o Vértice 3 
-    //     ]);
+        const uvs: Float32Array = new Float32Array([
+            0.0, 1.0, // UV para o Vértice 0 
+            1.0, 1.0, // UV para o Vértice 1 
+            1.0, 0.0, // UV para o Vértice 2
+            0.0, 0.0  // UV para o Vértice 3 
+        ]);
         
-    //     const mesh = new Mesh();
-    //     mesh.vertices = vertices;
-    //     mesh.normals = normals;
-    //     mesh.uvs = uvs;
-    //     mesh.indices = indices;
-    //     mesh.compile();
+        const mesh = new Mesh();
+        mesh.vertices = vertices;
+        mesh.normals = normals;
+        mesh.uvs = uvs;
+        mesh.indices = indices;
+        mesh.compile();
 
-    //     return mesh;
-    // }
-
-    public static createCube(size: Vector3 = new Vector3(1, 1, 1)): Mesh {
-        const halfSize = size.x / 2; 
-
-        const vertices: Vector3[] = [
+        return mesh;
+    }
+    public static createCube() {
+        
+        const vertices = new Float32Array([
             // Face frontal
-            new Vector3(-halfSize, -halfSize,  halfSize),   // V0
-            new Vector3( halfSize, -halfSize,  halfSize),   // V1
-            new Vector3( halfSize,  halfSize,  halfSize),   // V2
-            new Vector3(-halfSize,  halfSize,  halfSize),   // V3
+            -0.5, -0.5,  0.5,   // V0
+            0.5, -0.5,  0.5,   // V1
+            0.5,  0.5,  0.5,   // V2
+            -0.5,  0.5,  0.5,   // V3
 
             // Face traseira
-            new Vector3(-halfSize, -halfSize, -halfSize),   // V4
-            new Vector3( halfSize, -halfSize, -halfSize),   // V5
-            new Vector3( halfSize,  halfSize, -halfSize),   // V6
-            new Vector3(-halfSize,  halfSize, -halfSize),   // V7
+            -0.5, -0.5, -0.5,   // V4
+            0.5, -0.5, -0.5,   // V5
+            0.5,  0.5, -0.5,   // V6
+            -0.5,  0.5, -0.5,   // V7
 
             // Face esquerda
-            new Vector3(-halfSize, -halfSize, -halfSize),   // V4
-            new Vector3(-halfSize, -halfSize,  halfSize),   // V0
-            new Vector3(-halfSize,  halfSize,  halfSize),   // V3
-            new Vector3(-halfSize,  halfSize, -halfSize),   // V7
+            -0.5, -0.5, -0.5,   // V4
+            -0.5, -0.5,  0.5,   // V0
+            -0.5,  0.5,  0.5,   // V3
+            -0.5,  0.5, -0.5,   // V7
 
             // Face direita
-            new Vector3( halfSize, -halfSize, -halfSize),   // V5
-            new Vector3( halfSize, -halfSize,  halfSize),   // V1
-            new Vector3( halfSize,  halfSize,  halfSize),   // V2
-            new Vector3( halfSize,  halfSize, -halfSize),   // V6
+            0.5, -0.5, -0.5,   // V5
+            0.5, -0.5,  0.5,   // V1
+            0.5,  0.5,  0.5,   // V2
+            0.5,  0.5, -0.5,   // V6
 
             // Face superior
-            new Vector3(-halfSize,  halfSize, -halfSize),   // V7
-            new Vector3(-halfSize,  halfSize,  halfSize),   // V3
-            new Vector3( halfSize,  halfSize,  halfSize),   // V2
-            new Vector3( halfSize,  halfSize, -halfSize),   // V6
+            -0.5,  0.5, -0.5,   // V7
+            -0.5,  0.5,  0.5,   // V3
+            0.5,  0.5,  0.5,   // V2
+            0.5,  0.5, -0.5,   // V6
 
             // Face inferior
-            new Vector3(-halfSize, -halfSize, -halfSize),   // V4
-            new Vector3(-halfSize, -halfSize,  halfSize),   // V0
-            new Vector3( halfSize, -halfSize,  halfSize),   // V1
-            new Vector3( halfSize, -halfSize, -halfSize)    // V5
-        ];
+            -0.5, -0.5, -0.5,   // V4
+            -0.5, -0.5,  0.5,   // V0
+            0.5, -0.5,  0.5,   // V1
+            0.5, -0.5, -0.5    // V5
+        ]);
 
-        const normals: Vector3[] = [
-            // Normais para cada face
-            new Vector3(0, 0, 1),  // Face frontal
-            new Vector3(0, 0, 1),
-            new Vector3(0, 0, 1),
-            new Vector3(0, 0, 1),
+        const normals = new Float32Array([
+            // Face frontal
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
 
-            new Vector3(0, 0, -1), // Face traseira
-            new Vector3(0, 0, -1),
-            new Vector3(0, 0, -1),
-            new Vector3(0, 0, -1),
+            // Face traseira
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
 
-            new Vector3(-1, 0, 0), // Face esquerda
-            new Vector3(-1, 0, 0),
-            new Vector3(-1, 0, 0),
-            new Vector3(-1, 0, 0),
+            // Face esquerda
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
 
-            new Vector3(1, 0, 0),  // Face direita
-            new Vector3(1, 0, 0),
-            new Vector3(1, 0, 0),
-            new Vector3(1, 0, 0),
+            // Face direita
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
 
-            new Vector3(0, 1, 0),  // Face superior
-            new Vector3(0, 1, 0),
-            new Vector3(0, 1, 0),
-            new Vector3(0, 1, 0),
+            // Face superior
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
 
-            new Vector3(0, -1, 0), // Face inferior
-            new Vector3(0, -1, 0),
-            new Vector3(0, -1, 0),
-            new Vector3(0, -1, 0)
-        ];
+            // Face inferior
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0
+        ]);
 
-        const textureCoords: Vector2[] = [
-            // Coordenadas de textura (UV)
-            new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1), // Face frontal
-            new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1), // Face traseira
-            new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1), // Face esquerda
-            new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1), // Face direita
-            new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1), // Face superior
-            new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1), new Vector2(0, 1)  // Face inferior
-        ];
+        const textureCoords = new Float32Array([
+            0, 0,   1, 0,   1, 1,   0, 1,  // Face frontal
+            0, 0,   1, 0,   1, 1,   0, 1,  // Face traseira
+            0, 0,   1, 0,   1, 1,   0, 1,  // Face esquerda
+            0, 0,   1, 0,   1, 1,   0, 1,  // Face direita
+            0, 0,   1, 0,   1, 1,   0, 1,  // Face superior
+            0, 0,   1, 0,   1, 1,   0, 1   // Face inferior
+        ]);
 
-        const indices = [
-            // Índices para desenhar as faces
-            0, 1, 2,  0, 2, 3,  // Face frontal
-            4, 5, 6,  4, 6, 7,  // Face traseira
-            8, 9, 10, 8, 10, 11, // Face esquerda
-            12, 13, 14, 12, 14, 15, // Face direita
-            16, 17, 18, 16, 18, 19, // Face superior
-            20, 21, 22, 20, 22, 23  // Face inferior
-        ];
+        const indices = new Uint16Array([
+            // Face frontal
+            0, 1, 2,  0, 2, 3,
+            // Face traseira
+            4, 5, 6,  4, 6, 7,
+            // Face esquerda
+            8, 9, 10, 8, 10, 11,
+            // Face direita
+            12, 13, 14, 12, 14, 15,
+            // Face superior
+            16, 17, 18, 16, 18, 19,
+            // Face inferior
+            20, 21, 22, 20, 22, 23
+        ]);
 
-        return new Mesh(vertices, indices, normals, textureCoords);
+        const mesh = new Mesh(vertices, indices, normals, textureCoords);
+        mesh.compile();
+
+        return mesh;
     }
 
-    public static createSphere(radius: number = 1, latitudes: number = 32, longitudes: number = 32): Mesh {
-        const vertices: Vector3[] = [];
-        const normals: Vector3[] = [];
-        const uvs: Vector2[] = [];
+   
+    public static createSphere(radius: number = 1, latitudes: number = 16, longitudes: number = 16): Mesh {
+        const vertices: number[] = [];
+        const normals: number[] = [];
+        const uvs: number[] = [];
         const indices: number[] = [];
     
         // Gerar vértices, normais e coordenadas UV
@@ -171,9 +180,9 @@ export default class MeshBuilder {
                 const v = lat / latitudes;    // Uso normal ao longo do eixo V
     
                 // Adiciona os dados
-                vertices.push(new Vector3(x, y, z));
-                normals.push(new Vector3(nx, ny, nz)); // Adiciona as normais
-                uvs.push(new Vector2(u, v)); // As UVs são geradas normalmente
+                vertices.push(x, y, z);
+                normals.push(nx, ny, nz); // Adiciona as normais
+                uvs.push(u, v); // As UVs são geradas normalmente
             }
         }
     
@@ -189,7 +198,14 @@ export default class MeshBuilder {
             }
         }
     
-        return new Mesh(vertices, indices, normals, uvs);
+        const mesh = new Mesh();
+        mesh.vertices = new Float32Array(vertices);
+        mesh.normals = new Float32Array(normals);
+        mesh.uvs = new Float32Array(uvs);
+        mesh.indices = new Uint16Array(indices);
+        mesh.compile();
+    
+        return mesh;
     }
     
 

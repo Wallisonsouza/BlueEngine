@@ -260,7 +260,7 @@ export default class Vector3 {
         return `Vec3(${v.x}, ${v.y}, ${v.z})`;
     }
 
-    public static arrayToFloat32Array(v: Vector3[]): Float32Array {
+    public static vec3ArrayToFloat32Array(v: Vector3[]): Float32Array {
         const float32Array = new Float32Array(v.length * 3);
         for (let i = 0; i < v.length; i++) {
             float32Array[i * 3] = v[i].x;

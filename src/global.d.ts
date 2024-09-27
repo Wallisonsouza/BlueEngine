@@ -3,8 +3,7 @@
  * Define os métodos necessários para criar buffers e acessar a instância de renderização.
  */
 export interface IRenderingApi {
-
-     createBuffer(data: Float32Array | null, target: number, usage: number): WebGLBuffer | null;
+    
     /**
      * Cria um buffer de vértices a partir de um array de vértices.
      * @param data - Dados dos vértices.
@@ -40,7 +39,7 @@ export interface IRenderingApi {
      */
     getRenderInstance(): WebGL2RenderingContext;
 
-    createArrayBuffer(data: Float32Array[]): WebGLBuffer | null;
+  
 }
  
 /**

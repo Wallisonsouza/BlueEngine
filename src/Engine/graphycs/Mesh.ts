@@ -1,7 +1,4 @@
 import Matrix4x4 from "../../../engine_modules/matrices/Matrix4x4";
-import Vector2 from "../../../engine_modules/vectors/Vector2";
-import Vector3 from "../../../engine_modules/vectors/Vector3";
-import { Vec3 } from "../../../engine_plugins/obj-looader/ObjRepresentation";
 import Component from "../../components/Component";
 import { IMeshBuffers, IMeshData, IRenderingApi } from "../../global";
 import Entity from "../components/Entity";
@@ -31,7 +28,7 @@ export class WebGL2Api implements IRenderingApi {
         this.context = gl;
     }
 
-    public createBuffer(
+    private createBuffer(
         data: Float32Array | Uint16Array | null,
         target: number,
         usage: number
@@ -107,10 +104,6 @@ export class WebGL2Api implements IRenderingApi {
             handleBufferCreationError("createNormalBuffer", this.context.ARRAY_BUFFER, this.context.STATIC_DRAW, error);
         }
     }
-
-    createArrayBuffer(data: Float32Array[]): WebGLBuffer | null {
-        
-    }
     
 
     getRenderInstance(): WebGL2RenderingContext {
@@ -118,52 +111,36 @@ export class WebGL2Api implements IRenderingApi {
     }
 }
 
-// export default class Mesh extends Entity implements IMeshData, IMeshBuffers {
+export default class Mesh extends Entity implements IMeshData, IMeshBuffers {
 
-//    vertices: Float32Array | null = null;
-//    indices: Uint16Array | null = null;
-//    normals: Float32Array | null = null;
-//    uvs: Float32Array | null = null;
-//    vertexBuffer: WebGLBuffer | null = null;
-//    indexBuffer: WebGLBuffer | null = null;
-//    normalBuffer: WebGLBuffer | null = null;
-//    uvBuffer: WebGLBuffer | null = null;
-//    colorBuffer: WebGLBuffer | null = null;
+   vertices: Float32Array | null = null;
+   indices: Uint16Array | null = null;
+   normals: Float32Array | null = null;
+   uvs: Float32Array | null = null;
+   vertexBuffer: WebGLBuffer | null = null;
+   indexBuffer: WebGLBuffer | null = null;
+   normalBuffer: WebGLBuffer | null = null;
+   uvBuffer: WebGLBuffer | null = null;
+   colorBuffer: WebGLBuffer | null = null;
 
-//    viewBuffer: WebGLBuffer | null = null;
+   viewBuffer: WebGLBuffer | null = null;
 
-//     constructor(vertices?: Float32Array, indices?: Uint16Array, normals?: Float32Array, uvs?: Float32Array) {
-//         super();
-//         this.vertices = vertices || null;
-//         this.indices = indices || null;
-//         this.normals = normals || null;
-//         this.uvs = uvs || null;
-//     }
-
-//     compile(): void { 
-//         const API = ServiceLocator.get<IRenderingApi>("RenderingApi");
-//         this.vertexBuffer = API.createVertexBuffer(this.vertices);
-//         this.indexBuffer = API.createIndexBuffer(this.indices);
-//         this.normalBuffer = API.createNormalBuffer(this.normals);
-//         this.uvBuffer = API.createUVBuffer(this.uvs);
-
-//         this.viewBuffer = API.createViewBuffer(Matrix4x4.identity().getData());
-//     }
-// }   
-
-
-export default class Mesh extends Entity {
-
-    vertices: Vector3[] | null = null;
-    normals: Vector3[] | null = null;
-    uvs: Vector2[] | null = null;
-    indices: number[] | null = null;
-  
-    constructor(vertices?: Vector3[], indices?: number[], normals?: Vector3[], uvs?: Vector2[]) {
+    constructor(vertices?: Float32Array, indices?: Uint16Array, normals?: Float32Array, uvs?: Float32Array) {
         super();
         this.vertices = vertices || null;
         this.indices = indices || null;
         this.normals = normals || null;
         this.uvs = uvs || null;
     }
+
+    compile(): void { 
+        const API = ServiceLocator.get<IRenderingApi>("RenderingApi");
+        this.vertexBuffer = API.createVertexBuffer(this.vertices);
+        this.indexBuffer = API.createIndexBuffer(this.indices);
+        this.normalBuffer = API.createNormalBuffer(this.normals);
+        this.uvBuffer = API.createUVBuffer(this.uvs);
+
+        this.viewBuffer = API.createViewBuffer(Matrix4x4.identity().getData());
+    }
 }   
+

@@ -92,7 +92,6 @@ export default class Engine {
     private start(): void {
         Input.start();
         ScryptManager.start();
-        RendererManager.start();
     }   
 
     private fixedUpdate(){

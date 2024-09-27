@@ -12,7 +12,6 @@ varying vec3 vNormal;
 varying vec3 vWorldPosition;
 varying vec2 vTextureCoord;
 
-attribute mat4 VIEW_ATTRIBUTE;
 
 void main() {
   
@@ -21,7 +20,7 @@ void main() {
     
     vNormal = normalize(mat3(MODEL_MATRIX) * VERTEX_NORMAL);
 
-    gl_Position = VIEW_ATTRIBUTE * worldPosition;
+    gl_Position = PROJECTION_MATRIX * VIEW_MATRIX * worldPosition;
 
     vTextureCoord = TEXTURE_COORD;
 }
