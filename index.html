@@ -18,15 +18,15 @@
   </style>
   <body>
     <div class="controls">
-      <label for="specular">specular:</label>
-      <input type="range" name="" id="specular" min="0" value="1">
-      <label for="smoothness">Smoothness:</label>
-      <input type="range" id="smoothness" min="0" max="100" value="32" step="1">
+      <label for="metalic">metalic:</label>
+      <input type="range" name="" id="metalic" min="0" max="1" value="1" step="0.01">
+      <label for="roughness">roughness:</label>
+      <input type="range" id="roughness" min="0" max="1" value="0.1" step="0.01">
     </div>
    
     <div id="fps"></div>
       <div id="hierarchy"></div>
-    <canvas id="canvas"></canvas>
+    <canvas id="canvas" width="800" height=" 600"></canvas>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

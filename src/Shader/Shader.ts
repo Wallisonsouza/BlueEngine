@@ -218,6 +218,14 @@ export class Shader {
         }
     }
 
+    public enableAttribute16f(gl: WebGLRenderingContext, name: string) {
+        const location = this.getAttributeLocation(name);
+        if (location !== null) {
+            gl.enableVertexAttribArray(location);
+            gl.vertexAttribPointer(location, 16, gl.FLOAT, false, 0, 0);
+        }
+    }
+
     public enableAttribute2f(gl: WebGLRenderingContext, name: string) {
         const location = this.getAttributeLocation(name);
         if (location !== null) {

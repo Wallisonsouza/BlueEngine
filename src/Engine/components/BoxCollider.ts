@@ -8,8 +8,12 @@ export default class BoxCollider extends Collider {
 
     public center: Vector3 = Vector3.zero;
     public size: Vector3 =  new Vector3(0.5, 0.5, 0.5);
+
+    constructor(){
+        super("BoxCollider");
+    }
     
-    public raycast(ray: Ray, maxDistance: number = Number.EPSILON): Vector3 | null {
+    public raycast(ray: Ray): Vector3 | null {
 
         const invRotation = Quaternion.inverse(this.transform.rotation);
         const localOrigin = Quaternion.multiplyVec3(invRotation, ray.origin.subtract(this.transform.position.add(this.center)));
@@ -46,7 +50,6 @@ export default class BoxCollider extends Collider {
     
         return collisionPointGlobal;
     }
-    
 
     public drawGizmos(): void {
         const worldCenter = this.transform.position.add(this.center);

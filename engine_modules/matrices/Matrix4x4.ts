@@ -29,6 +29,10 @@ export default class Matrix4x4 {
         );
     }
 
+    public multyply(m: Matrix4x4){
+        return Matrix4x4.multiply(this, m);
+    }
+
     public clone(): Matrix4x4 {
         return new Matrix4x4(
             this._data[0], this._data[1], this._data[2], this._data[3],

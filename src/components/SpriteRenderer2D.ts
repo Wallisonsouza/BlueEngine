@@ -1,9 +1,9 @@
-import Renderer from "../../components/Renderer";
-import Transform from "../../components/Transform";
-import Camera from "../../components/Camera";
-import { Material2D } from "../Material/Material2D";
-import PointLight2D from "./Light2D";
-import { Sprite2D } from "./Sprite2D";
+import Renderer from "./Renderer";
+import Transform from "./Transform";
+import Camera from "./Camera";
+import { Material2D } from "../Engine2D/Material/Material2D";
+import PointLight2D from "../Engine2D/Components/Light2D";
+import { Sprite2D } from "../Engine2D/Components/Sprite2D";
 
 export default class SpriteRenderer2D extends Renderer {
 
@@ -40,10 +40,12 @@ export default class SpriteRenderer2D extends Renderer {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.sprite.mesh.uvBuffer);
         this.material.shader.enableAttribute2f(gl, "a_textureCoord");
    
-        if (this.material.texture) {
+        if (this.material.texture && this.material.texture.data) {
             gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, this.material.texture);
+            gl.bindTexture(gl.TEXTURE_2D, this.material.texture.data);
             this.material.shader.setUniform1i("u_texture", 0);
+            this.material.shader.setUniform2f("u_resolution", this.material.texture.width, this.material.texture.height);
+            this.material.shader.setUniform1f("u_outlineThickness", transform.position.distanceTo(camera.transform.position));
         } 
     
         const [x, y, z, w] = this.material.color.toArray();
@@ -63,17 +65,9 @@ export default class SpriteRenderer2D extends Renderer {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.sprite.mesh.indexBuffer);
         
         gl.drawElements(gl.TRIANGLES, this.sprite.mesh.indices.length, gl.UNSIGNED_SHORT, 0);
-    
-        gl.bindBuffer(gl.ARRAY_BUFFER, null);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-    
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, null);
-        gl.activeTexture(gl.TEXTURE1);
-        gl.bindTexture(gl.TEXTURE_2D, null);
 
-        gl.disable(gl.BLEND);
         // this.light.drawGizmos();
+       
     }
 }
 

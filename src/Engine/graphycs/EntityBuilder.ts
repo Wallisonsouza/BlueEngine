@@ -1,10 +1,12 @@
 import GameObject from "../components/GameObject";
 import { Sprite2D } from "../../Engine2D/Components/Sprite2D";
 import { Material2D } from "../../Engine2D/Material/Material2D";
-import BoxCollider from "../components/BoxCollider";
-import SpriteRenderer2D from "../../Engine2D/Components/SpriteRenderer2D";
+import SpriteRenderer2D from "../../components/SpriteRenderer2D";
 import Camera from "../../components/Camera";
-import MeshRenderer from "./MeshRenderer";
+import MeshRenderer from "../../components/MeshRenderer";
+import Material3D from "../../Engine2D/Material/Material3D";
+import MeshBuilder from "./MeshFactory";
+import Vector2 from "../../../engine_modules/vectors/Vector2";
 
 export default class EntityBuilder {
 
@@ -14,14 +16,13 @@ export default class EntityBuilder {
         const spriteRenderer = new SpriteRenderer2D();
         const sprite = new Sprite2D();
         const material = new Material2D();
-        material.setTexture("./src/Engine/Assets/2D/Textures/Square.png");
+        material.setTexture("./character.png");
 
         spriteRenderer.sprite = sprite;
         spriteRenderer.material = material;
 
         square.addComponentInstance(spriteRenderer);
-        square.addComponent(BoxCollider);
-        square.addComponent(MeshRenderer);
+        // square.addComponent(BoxCollider);
         return square;
     }
 
@@ -63,5 +64,20 @@ export default class EntityBuilder {
         camera.addComponentInstance(cam);
       
         return camera;
+    }
+
+    public static createCube() {
+        const cube = new GameObject("new Cube");
+        const mesh = MeshBuilder.createCube();
+        const meshRenderer = new MeshRenderer();
+        const material = new Material3D();
+        material.tiling = new Vector2(1, 1);
+        material.setAlbedo("/brick/Poliigon_BrickWallReclaimed_8320_BaseColor.jpg");
+        material.setNormalMap("/brick/Poliigon_BrickWallReclaimed_8320_Normal.png");
+        meshRenderer.material = material;
+        meshRenderer.mesh = mesh;
+        cube.addComponentInstance(meshRenderer);
+      
+        return cube;
     }
 }

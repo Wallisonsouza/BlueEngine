@@ -5,13 +5,14 @@ import Color from "../../Engine/static/color";
 
 export default class PointLight extends Component {
 
+    public color: Color = Color.white;
     public range: number;
     public intensity: number;
 
     constructor(gameObject: GameObject | null = null) {
         super("Light");
-        this.range = 10;
-        this.intensity = 1;
+        this.range = 100000;
+        this.intensity = 1000;
         if(!gameObject) return;
        this.setGameObject(gameObject);
     }

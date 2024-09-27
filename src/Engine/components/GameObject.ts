@@ -32,7 +32,7 @@ export default class GameObject extends Entity {
     public addComponentInstance(componentInstance: Component): void {
 
         if(componentInstance instanceof Transform)  {
-            throw new ComponentAlreadyExistsException(`O componente "${componentInstance.identifier}" ja existe no objeto`);
+            throw new ComponentAlreadyExistsException(`O componente "${componentInstance.type}" ja existe no objeto`);
         }
 
         if (!this.components.contains(componentInstance)) {

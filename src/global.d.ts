@@ -3,6 +3,8 @@
  * Define os métodos necessários para criar buffers e acessar a instância de renderização.
  */
 export interface IRenderingApi {
+
+     createBuffer(data: Float32Array | null, target: number, usage: number): WebGLBuffer | null;
     /**
      * Cria um buffer de vértices a partir de um array de vértices.
      * @param data - Dados dos vértices.
@@ -31,14 +33,16 @@ export interface IRenderingApi {
      */
     createUVBuffer(data: Float32Array | null): WebGLBuffer | null;
     createColorBuffer(data: Float32Array | null): WebGLBuffer | null;
-
+    createViewBuffer(data: Float32Array | null): WebGLBuffer | null;
     /**
      * Obtém a instância atual do contexto WebGL2 para renderização.
      * @returns A instância de `WebGL2RenderingContext`.
      */
     getRenderInstance(): WebGL2RenderingContext;
-}
 
+    createArrayBuffer(data: Float32Array[]): WebGLBuffer | null;
+}
+ 
 /**
  * Interface para definir os dados de uma malha.
  * Inclui informações de vértices, índices, normais e coordenadas UV.

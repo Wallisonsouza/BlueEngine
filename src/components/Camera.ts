@@ -6,7 +6,6 @@ import Component from "./Component";
 import Color from "../Engine/static/color";
 import { Main, WindowScreen } from "../main";
 
-
 export default class Camera extends Component {
    
     public static main: Main;
@@ -19,12 +18,12 @@ export default class Camera extends Component {
 
     constructor() {
         super("Camera");
+        this.clearColor = Color.black;
         this.fieldOfView = 60;
         this.aspectRatio = 16 / 9;
-        this.nearPlane = 0.3;
+        this.nearPlane = 0.03;
         this.farPlane = 1000;
         this.depth = true;
-        this.clearColor = Color.black;
     }
 
     public get viewMatrix(): Matrix4x4 {
@@ -33,6 +32,12 @@ export default class Camera extends Component {
 
     public get projectionMatrix(): Matrix4x4 {
         return Matrix4x4.perspective(this.fieldOfView, this.aspectRatio, this.nearPlane, this.farPlane);
+    }
+
+    public get clipMatrix(): Matrix4x4 {
+        const projection = this.projectionMatrix;
+        const view = this.viewMatrix;
+        return Matrix4x4.multiply(projection, view);
     }
     
     screenPointToRay(screenPoint: Vector3): Ray {
@@ -64,7 +69,6 @@ export default class Camera extends Component {
         // Gizmos.color = Color.white;
         // CameraGizmos.drawPerspectiveGizmos(this);
     }
-
 }    
 
 

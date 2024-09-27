@@ -25,5 +25,3 @@ export class RayCastData {
         this.object = object;
     }
 }
-
-

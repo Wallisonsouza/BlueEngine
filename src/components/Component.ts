@@ -22,16 +22,16 @@ export default class Component extends Entity {
         return this._gameObject.transform;
     }
 
-    public get identifier(): string {
-        return this._identifier;
+    public get type(): string {
+        return this._type;
     }
 
-    private _identifier: string ;
+    private _type: string ;
     private _gameObject: GameObject | null = null;
 
     constructor(identifier: string = "new Component", active: boolean = true, gameObject: GameObject | null = null) {
         super();
-        this._identifier = identifier;
+        this._type = identifier;
         this.active = active;
         this._gameObject = gameObject;
     }

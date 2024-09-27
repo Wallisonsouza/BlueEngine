@@ -27,7 +27,10 @@ export default class Engine {
             this.awake.bind(this),
             this.start.bind(this),
             this.update.bind(this),
-            this.fixedUpdate.bind(this)
+            this.fixedUpdate.bind(this),
+            undefined,
+            this.onDrawnGizmos.bind(this)
+            
         );
         
         this.renderingAPI = API;
@@ -89,6 +92,7 @@ export default class Engine {
     private start(): void {
         Input.start();
         ScryptManager.start();
+        RendererManager.start();
     }   
 
     private fixedUpdate(){
@@ -105,6 +109,7 @@ export default class Engine {
     }
     
     public onDrawnGizmos(): void {
+        RendererManager.drawGizmos();
         ScryptManager.onDrawGizmos();
     }
 

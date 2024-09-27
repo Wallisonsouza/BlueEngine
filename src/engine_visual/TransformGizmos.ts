@@ -1,16 +1,9 @@
-import Quaternion from "../../engine_modules/vectors/Quaternion";
 import Vector3 from "../../engine_modules/vectors/Vector3";
-import Input from "../Base/Input/Input";
 import Ray from "../Base/Mathf/Ray";
 import Gizmos from "../Engine/graphycs/Gizmos";
 import Transform from "../components/Transform";
 import Color from "../Engine/static/color";
-import BoxCollider from "../Engine/components/BoxCollider";
 import Camera from "../components/Camera";
-import { WindowScreen } from "../main";
-
-let xCollider = new BoxCollider();
-let moving: {colision: boolean, axis: "X" | "Y" | "Z"| null} = {colision: false, axis: null};
 
 export function drawTransformGizmos(transform: Transform) {
 
@@ -28,37 +21,34 @@ export function drawTransformGizmos(transform: Transform) {
     const yEnd = transform.position.add(globalYAxis);
     const zEnd = transform.position.add(globalZAxis);
 
-    Gizmos.color = Color.red;
-    Gizmos.drawLine(transform.position, xEnd);
-    Gizmos.color = Color.green;
-    Gizmos.drawLine(transform.position, yEnd);
-    Gizmos.color = Color.blue;
-    Gizmos.drawLine(transform.position, zEnd);
+    Gizmos.drawLine(transform.position, xEnd, Color.red);
+    Gizmos.drawLine(transform.position, yEnd, Color.green);
+    Gizmos.drawLine(transform.position, zEnd, Color.blue);
 
 
-    const ray = camera.screenPointToRay(Input.mousePosition);
+    // const ray = camera.screenPointToRay(Input.mousePosition);
 
    
-    xCollider.setGameObject(transform.gameObject);
-    xCollider.size = new Vector3(t / 2, 0.02 * t, 0.02 * t);
+    // xCollider.setGameObject(transform.gameObject);
+    // xCollider.size = new Vector3(t / 2, 0.02 * t, 0.02 * t);
     
 
 
-    if(xCollider.raycast(ray, Infinity)) {
+    // if(xCollider.raycast(ray)) {
 
-        moving.colision = true;
-        moving.axis = "X";
-        xCollider.color = Color.green;
+    //     moving.colision = true;
+    //     moving.axis = "X";
+    //     xCollider.color = Color.green;
      
-    } else {
-        xCollider.color = Color.red;
-    }
+    // } else {
+    //     xCollider.color = Color.red;
+    // }
 
 
-    if (Input.getMouseButton(0) && moving.colision) {
-        const mouseDelta = Input.mouseDelta;
-        transform.translate(new Vector3(mouseDelta.x * 0.01));
-    }
+    // if (Input.getMouseButton(0) && moving.colision) {
+    //     const mouseDelta = Input.mouseDelta;
+    //     transform.translate(new Vector3(mouseDelta.x * 0.01));
+    // }
     
 }
 
