@@ -12,8 +12,8 @@ import Color from './core/math/color';
 import DirecionalLight from './core/components/DirecionalLight';
 
 
-import GLTFLoader from '../engine_plugins/GLTF/GLTFLoader';
-import {ParsedMaterial, ParsedMesh} from '../engine_plugins/GLTF/GLTFParsed';
+import GLTFLoader from '../plugins/GLTF/GLTFLoader';
+import {ParsedMaterial, ParsedMesh} from '../plugins/GLTF/GLTFParsed';
 import MeshFilter from './core/components/MeshFilter';
 import GameObject from './core/components/GameObject';
 import Mesh from './core/graphics/mesh/Mesh';
@@ -86,7 +86,7 @@ const engine = new Engine(api);
 await engine.load();
 
 const parser = new GLTFLoader();
-const objects = await parser.load('untitled.gltf');
+const objects = await parser.load('assets/3d/untitled.gltf');
 
 const gameObjects : {gameObject: GameObject, children?: number[]}[] = [];
 

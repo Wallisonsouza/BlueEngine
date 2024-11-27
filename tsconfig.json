@@ -22,12 +22,7 @@
   },
   "include": [
     "src",
-    "engine_modules/module_vectors/Vector3.ts",
-    "src/core/math/Matrix4x4.ts",
-    "engine_modules/module_vectors/Quaternion.ts",
-    "engine_modules/module_vectors/Vector2.ts",
-    "engine_modules/module_vectors/Vector4.ts",
-    "engine_plugins",
-    "Engine/Experimental"
-, "Engine/2D", "Experimental/SiteUsandoAPI", "Experimental/engine_visual", "Experimental/Util.ts", "Experimental/cache"  ]
+    "assets",
+    "plugins"
+  ]
 }
