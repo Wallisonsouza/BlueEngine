@@ -1,17 +1,18 @@
-import CameraController from "./Engine/CameraControler";
-import MonoComportament from "./Engine/components/MonoComportament";
-import Time from "./Engine/static/Time";
-import Camera from "./components/Camera";
+import CameraControler from "./core/CameraControler";
+
+import Time from "./core/Time";
+import Camera from "./core/components/Camera";
+import MonoComportament from "./core/components/MonoComportament";
 
 export default class SimpleEngine extends MonoComportament {
 
-    cameraControle: CameraController = new CameraController();
+    cameraControle: CameraControler = new CameraControler();
 
     public start(): void {
-        Camera.main.camera.farPlane = 2000;
+        Camera.mainCamera.farPlane = 2000;
     }
-
+    
     public update(): void { 
-        this.cameraControle.update(Camera.main.camera, Time.deltaTime); 
+        this.cameraControle.update(Camera.mainCamera.transform, Time.deltaTime); 
     }
 }

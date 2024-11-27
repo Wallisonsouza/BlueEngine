@@ -1,3 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+:root {
+  --interface-background-color: rgb(186, 186, 186);
+  --interface-text-color: rgb(34, 34, 34);
+
+  --hierarchy-title-color: #b4c2c3;
+  --hierarchy-text-color: #868686;
+  --hierarchy-background-color: var(--interface-background-color);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,16 +16,189 @@
 }
 
 body {
+  font-family: 'Roboto', sans-serif;
   width: 100%;
   height: 100vh;
-  display: flex;
 }
 
-#canvas {
+.drag {
+  background-color: blueviolet;
+}
+
+.desactived {
+  color: brown;
+}
+
+.dropdown-open {
+  background-image: url('/Chevron down.svg');
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: 16px;
+  transform: rotate(0deg);
+}
+
+.horizontal-line-container {
+
   flex: 1;
-} 
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  background-color: transparent;
+}
+
+
+
+
+
+.layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+}
+.files {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(25, 25, 25);
+}
 
 #fps {
+  top: 0;
+  left: 0;
   position: absolute;
-  background-color: aliceblue;
+  color: rgb(250, 0, 0);
+  padding: 4px;
+}
+
+.render-area {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
+
+
+#canvas {
+  
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(255, 255, 255);
+}
+
+.hierarchy-container {
+  
+  display: none;
+  width: 240px;
+  height: 100%;
+  flex-shrink: 0;
+  flex-direction: column;
+  overflow: hidden;
+
+  & .hierarchy-title {
+  
+    overflow: hidden;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-items: center;
+    color: var(--hierarchy-title-color);
+    padding: 4px;
+    background-color: rgb(39, 39, 39);
+    font-weight: 300;
+    font-size: 16px;
+  }
+  
+  & #hierarchy-content {
+    color: var(--hierarchy-text-color);
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    position: relative;
+    background-color: var(--hierarchy-background-color);
+  }
+} 
+
+.inspector-container {
+  display: none;
+  width: 240px;
+  position: relative;
+  flex-shrink: 0;
+
+  & .inspector-title {
+    color:  white;
+    display: flex;
+    align-items: center;
+    justify-content:  center;
+    background-color: black;
+    height: 24px;
+  }
+
+  & .inspector-content {
+    background-color: var(--interface-background-color);
+    width: 100%;
+    height: 100%;
+  }
+  
+}
+
+.transform-container {
+
+  color: white;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(159, 159, 159, 0.671);
+
+  & .transform-title {
+    height: 24px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    background-color: #a1a1a1;
+    
+  }
+
+  & .transform-content {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+  }
+
+}
+
+.vector3-container {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+
+  & .vector3-title {
+    height: 24px;
+    width: 100%;
+    display: flex;
+    display: flex;
+    align-items: center;
+  }
+
+  .vector3-content {
+    display: flex;
+    gap: 8px;
+      
+    & .x-title, .y-title, .z-title {
+      color: rgb(255, 255, 255);
+    }
+    & .x, .y, .z {
+      width: 100%;
+    }
+
+  }
 }

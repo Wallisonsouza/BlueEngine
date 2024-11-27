@@ -7,26 +7,93 @@
     <title>Quasaris Egine</title>
   </head>
 
-  <style>
-    .controls {
+
+  <style> 
+    .inputs {
       position: absolute;
-      right:  0;
-      padding: 12px;
-      display:  flex;
+      right: 0;
+      z-index: 99;
+      display: flex;
       flex-direction: column;
     }
   </style>
   <body>
-    <div class="controls">
-      <label for="metalic">metalic:</label>
-      <input type="range" name="" id="metalic" min="0" max="1" value="1" step="0.01">
-      <label for="roughness">roughness:</label>
-      <input type="range" id="roughness" min="0" max="1" value="0.1" step="0.01">
+
+ 
+
+    <div class="inputs">
+      <label for="width-input">width</label>
+      <input type="range" name="width-input" id="width-input" max="1000" min="10">
+
+
+      <label for="depth-input">depth</label>
+      <input type="range" name="depth-input" id="depth-input" max="1000" min="10">
     </div>
-   
-    <div id="fps"></div>
-      <div id="hierarchy"></div>
-    <canvas id="canvas" width="800" height=" 600"></canvas>
+    
+    <div class="layout">
+      
+      <div class="horizontal-line-container">
+
+        <div class="hierarchy-container">
+          <div class="hierarchy-title">Tree</div>
+          <div id="hierarchy-content"></div>
+        </div>
+      
+        <div class="render-area" id="render-area">
+          <div id="fps"></div>
+          <canvas id="canvas"></canvas>
+        </div>
+
+        <div class="inspector-container">
+          <div class="inspector-title">Inspector</div>
+          <div class="inspector-content" id="inspector">
+            <div class="transform-container">
+              <div class="transform-title">Transform</div>
+              <div class="transform-content">
+                <div class="vector3-container">
+                  <div class="vector3-title">Position</div>
+                  <div class="vector3-content">
+                    <div class="x-title">X</div>
+                    <input type="number" class="x" id="position-x"></input>
+                    <div class="y-title">Y</div>
+                    <input type="number" class="y" id="position-y"></input>
+                    <div class="z-title">Z</div>
+                    <input type="number" class="z" id="position-z"></input>
+                  </div>
+                </div>
+                <div class="vector3-container">
+                  <div class="vector3-title">Rotation</div>
+                  <div class="vector3-content">
+                    <div class="x-title">X</div>
+                    <input type="number" class="x" id="rotation-x"></input>
+                    <div class="y-title">Y</div>
+                    <input type="number" class="y" id="rotation-y"></input>
+                    <div class="z-title">Z</div>
+                    <input type="number" class="z" id="rotation-z"></input>
+                  </div>
+                </div>
+  
+                <div class="vector3-container">
+                  <div class="vector3-title">Scale</div>
+                  <div class="vector3-content">
+                    <div class="x-title">X</div>
+                    <input type="number" class="x" id="scale-x"></input>
+                    <div class="y-title">Y</div>
+                    <input type="number" class="y" id="scale-y"></input>
+                    <div class="z-title">Z</div>
+                    <input type="number" class="z" id="scale-z"></input>
+                  </div>
+                </div>
+              </div>
+             
+            </div>
+          </div>
+
+        </div>
+      
+      </div>
+     
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
