@@ -1,3 +1,5 @@
+import Display from "./components/Display";
+
 export class WebGlBufferCreationError extends Error {
     constructor(bufferType: string, message: string) {
         super(`Erro ao criar o buffer de ${bufferType}: ${message}`);
@@ -22,7 +24,6 @@ export class WebGl2BufferCreationError extends Error {
         }
     }
 }
-
 
 export class WebGpuBufferCreationError extends Error {
     constructor(bufferType: string, message: string) {
@@ -58,12 +59,19 @@ export class ShaderError extends Error {
 }
 
 export class NullReferenceException extends Error {
-    constructor(message: string) {
-        super(message);
+    constructor(source: string, message: string, solution?: string) {
+        // Gerar a mensagem de erro com a origem, descrição e, se fornecido, a solução
+        const fullMessage = solution
+            ? `[${source}] ${message} \n Possível causa: ${solution}`
+            : `[${source}] ${message}`;
+
+        super(fullMessage);
         this.name = "NullReferenceException";
-        this.message = `${message}`;
+        Display.addError(this);
     }
 }
+
+
 
 export class CameraNotFoundException extends Error {
     constructor(message: string) {
@@ -77,5 +85,13 @@ export class ComponentAlreadyExistsException extends Error {
         super(message);
         this.name = "DuplicateComponentException";
         this.message = `${message}`;
+    }
+}
+
+
+export class MeshRendererError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "MeshRendererError";
     }
 }

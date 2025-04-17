@@ -1,10 +1,33 @@
 import Mathf from "./Mathf";
 
 export default class Color {
+
     public r: number;
     public g: number;
     public b: number;
     public a: number;
+
+    constructor(r: number, g: number, b: number, a: number = 1.0) {
+        this.r = Mathf.clamp01(r);
+        this.g = Mathf.clamp01(g);
+        this.b = Mathf.clamp01(b);
+        this.a = Mathf.clamp01(a);
+    }
+
+    public toSRGB(): Color {
+        return new Color(
+            this.linearToSRGB(this.r),
+            this.linearToSRGB(this.g),
+            this.linearToSRGB(this.b),
+            this.a
+        );
+    }
+
+    private linearToSRGB(value: number): number {
+        return (value <= 0.0031308) 
+            ? value * 12.92
+            : 1.055 * Math.pow(value, 1.0 / 2.4) - 0.055;
+    }
 
     public get rgb() {
         return [this.r, this.g, this.b];
@@ -12,176 +35,6 @@ export default class Color {
 
     public get rgba() {
         return [this.r, this.g, this.b, this.a];
-    }
-   
-
-    //#region Cores Predefinidas
-
-    /** Cor branca. */
-    public static get white(): Color {
-        return new Color(1, 1, 1, 1);
-    }
-
-    /** Cor preta. */
-    public static get black(): Color {
-        return new Color(0, 0, 0, 1);
-    }
-
-    /** Cor vermelha. */
-    public static get red(): Color {
-        return new Color(1, 0, 0, 1);
-    }
-
-    /** Cor verde. */
-    public static get green(): Color {
-        return new Color(0, 1, 0, 1);
-    }
-
-    /** Cor azul. */
-    public static get blue(): Color {
-        return new Color(0, 0, 1, 1);
-    }
-
-    /** Cor amarela. */
-    public static get yellow(): Color {
-        return new Color(1, 1, 0, 1);
-    }
-
-    /** Cor ciano. */
-    public static get cyan(): Color {
-        return new Color(0, 1, 1, 1);
-    }
-
-    /** Cor magenta. */
-    public static get magenta(): Color {
-        return new Color(1, 0, 1, 1);
-    }
-
-    /** Cor laranja. */
-    public static get orange(): Color {
-        return new Color(1, 0.647, 0, 1);
-    }
-
-    /** Cor roxa. */
-    public static get purple(): Color {
-        return new Color(0.5, 0, 0.5, 1);
-    }
-
-    /** Cor rosa. */
-    public static get pink(): Color {
-        return new Color(1, 0.753, 0.796, 1);
-    }
-
-    /** Cor marrom. */
-    public static get brown(): Color {
-        return new Color(0.6, 0.4, 0.2, 1);
-    }
-
-    /** Cor cinza. */
-    public static get gray(): Color {
-        return new Color(0.5, 0.5, 0.5, 1);
-    }
-
-    /** Cor cinza claro. */
-    public static get lightGray(): Color {
-        return new Color(0.75, 0.75, 0.75, 1);
-    }
-
-    /** Cor cinza escuro. */
-    public static get darkGray(): Color {
-        return new Color(0.25, 0.25, 0.25, 1);
-    }
-
-    //#endregion
-
-    //#region Cores Adicionais
-
-    /** Verde-água. */
-    public static get teal(): Color {
-        return new Color(0, 0.5, 0.5, 1);
-    }
-
-    /** Coral. */
-    public static get coral(): Color {
-        return new Color(1, 0.5, 0.31, 1);
-    }
-
-    /** Lavanda. */
-    public static get lavender(): Color {
-        return new Color(0.9, 0.8, 1, 1);
-    }
-
-    /** Dourado. */
-    public static get gold(): Color {
-        return new Color(1, 0.84, 0, 1);
-    }
-
-    /** Prateado. */
-    public static get silver(): Color {
-        return new Color(0.75, 0.75, 0.75, 1);
-    }
-
-    /** Verde menta. */
-    public static get mintGreen(): Color {
-        return new Color(0.6, 1, 0.6, 1);
-    }
-
-    /** Salmão. */
-    public static get salmon(): Color {
-        return new Color(1, 0.5, 0.5, 1);
-    }
-
-    /** Índigo. */
-    public static get indigo(): Color {
-        return new Color(0.294, 0, 0.51, 1);
-    }
-
-    /** Pêssego. */
-    public static get peach(): Color {
-        return new Color(1, 0.85, 0.725, 1);
-    }
-
-    /** Blush Lavanda. */
-    public static get lavenderBlush(): Color {
-        return new Color(1, 0.94, 0.96, 1);
-    }
-
-    //#endregion
-
-    //#region Cores Pastéis
-
-    /** Azul pastel. */
-    public static get pastelBlue(): Color {
-        return new Color(0.68, 0.85, 0.9, 1);
-    }
-
-    /** Verde pastel. */
-    public static get pastelGreen(): Color {
-        return new Color(0.7, 1, 0.7, 1);
-    }
-
-    /** Rosa pastel. */
-    public static get pastelPink(): Color {
-        return new Color(1, 0.7, 0.8, 1);
-    }
-
-    /** Amarelo pastel. */
-    public static get pastelYellow(): Color {
-        return new Color(1, 1, 0.8, 1);
-    }
-
-    /** Roxo pastel. */
-    public static get pastelPurple(): Color {
-        return new Color(0.8, 0.7, 1, 1);
-    }
-
-    //#endregion
-
-    constructor(r: number, g: number, b: number, a: number = 1.0) {
-        this.r = Mathf.clamp01(r);
-        this.g = Mathf.clamp01(g);
-        this.b = Mathf.clamp01(b);
-        this.a = Mathf.clamp01(a);
     }
 
     public static hexToRGBA(hex: string): Color {
@@ -213,6 +66,16 @@ export default class Color {
         return new Color(r / 255, g / 255, b / 255, a);
     }
 
+    public equals(other: Color): boolean {
+      
+        return (
+            this.r === other.r &&
+            this.g === other.g &&
+            this.b === other.b &&
+            this.a === other.a
+        );
+    }
+    
     public blend(other: Color, factor: number): Color {
         factor = Mathf.clamp01(factor);
         return new Color(
@@ -242,4 +105,48 @@ export default class Color {
     public toString(): string {
         return `rgba(${Math.round(this.r * 255)}, ${Math.round(this.g * 255)}, ${Math.round(this.b * 255)}, ${this.a})`;
     }
+
+    public toF32Array() {
+        return new Float32Array([this.r, this.g, this.b]);
+    }
+        
+    public static readonly WHITE = new Color(1, 1, 1, 1);
+    public static readonly BLACK = new Color(0, 0, 0, 1);
+    public static readonly RED = new Color(1, 0, 0, 1);
+    public static readonly GREEN = new Color(0, 1, 0, 1);
+    public static readonly BLUE = new Color(0, 0, 1, 1);
+    public static readonly YELLOW = new Color(1, 1, 0, 1);
+    public static readonly CYAN = new Color(0, 1, 1, 1);
+    public static readonly MAGENTA = new Color(1, 0, 1, 1);
+    public static readonly ORANGE = new Color(1, 0.647, 0, 1);
+    public static readonly PURPLE = new Color(0.5, 0, 0.5, 1);
+    public static readonly PINK = new Color(1, 0.753, 0.796, 1);
+    public static readonly BROWN = new Color(0.6, 0.4, 0.2, 1);
+    public static readonly GRAY = new Color(0.5, 0.5, 0.5, 1);
+    public static readonly LIGHT_GRAY = new Color(0.75, 0.75, 0.75, 1);
+    public static readonly DARK_GRAY = new Color(0.25, 0.25, 0.25, 1);
+    public static readonly TEAL = new Color(0, 0.5, 0.5, 1);
+    public static readonly CORAL = new Color(1, 0.5, 0.31, 1);
+    public static readonly LAVENDER = new Color(0.9, 0.8, 1, 1);
+    public static readonly GOLD = new Color(1, 0.84, 0, 1);
+    public static readonly SILVER = new Color(0.75, 0.75, 0.75, 1);
+    public static readonly MINT_GREEN = new Color(0.6, 1, 0.6, 1);
+    public static readonly SALMON = new Color(1, 0.5, 0.5, 1);
+    public static readonly INDIGO = new Color(0.294, 0, 0.51, 1);
+    public static readonly PEACH = new Color(1, 0.85, 0.725, 1);
+    public static readonly LAVENDER_BLUSH = new Color(1, 0.94, 0.96, 1);
+    public static readonly PASTEL_BLUE = new Color(0.68, 0.85, 0.9, 1);
+    public static readonly PASTEL_GREEN = new Color(0.7, 1, 0.7, 1);
+    public static readonly PASTEL_PINK = new Color(1, 0.7, 0.8, 1);
+    public static readonly PASTEL_YELLOW = new Color(1, 1, 0.8, 1);
+    public static readonly PASTEL_PURPLE = new Color(0.8, 0.7, 1, 1);
+    public static readonly LIME = new Color(0.75, 1, 0, 1); 
+    public static readonly PERIWINKLE = new Color(0.8, 0.8, 1, 1); 
+    public static readonly MOSS_GREEN = new Color(0.5, 0.6, 0.3, 1);
+    public static readonly SKY_BLUE = new Color(0.53, 0.81, 0.92, 1);
+    public static readonly MAUVE = new Color(0.88, 0.63, 0.82, 1);
+    public static readonly CHARCOAL = new Color(0.22, 0.24, 0.27, 1);
+    public static readonly LAVENDER_PURPLE = new Color(0.58, 0.44, 0.86, 1); 
+    public static readonly SEAFOAM_GREEN = new Color(0.48, 1, 0.52, 1);
+    public static readonly FUCHSIA = new Color(0.88, 0.06, 0.45, 1);
 }

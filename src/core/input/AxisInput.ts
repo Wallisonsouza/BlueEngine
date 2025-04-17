@@ -2,18 +2,19 @@ import Time from "../Time";
 import Mathf from "../math/Mathf";
 import KeyInput from "./KeyInput";
 
-
 export class AxisInput {
 
-    // Configuração de interpolação para cada tecla
     private static keySettings: { [key: string]: { value: number; duration: number } } = {
         "d": { value: 0, duration: 1 },
         "a": { value: 0, duration: 1 },
-        "w": { value: 0, duration: 1 },
-        "s": { value: 0, duration: 1 }
+        "w": { value: 0, duration: 1 }, 
+        "s": { value: 0, duration: 1 },
+        "ArrowRight": { value: 0, duration: 1 },
+        "ArrowLeft": { value: 0, duration: 1 },
+        "ArrowUp": { value: 0, duration: 1 },
+        "ArrowDown": { value: 0, duration: 1 }
     };
 
-    // Função auxiliar para interpolação
     private static interpolateKey(key: string, targetValue: number, deltaTime: number): void {
         if (KeyInput.getKey(key)) {
             this.keySettings[key].value = Mathf.lerp(
@@ -30,20 +31,26 @@ export class AxisInput {
         }
     }
 
-    // Função principal para obter o eixo
+
     public static getAxis(axis: string) {
         const deltaTime = Time.deltaTime;
 
         if (axis === "Horizontal") {
-            this.interpolateKey("d", 1, deltaTime);
-            this.interpolateKey("a", 1, deltaTime); 
-            return this.keySettings["d"].value - this.keySettings["a"].value;
+            this.interpolateKey("ArrowLeft", 1, deltaTime);
+            this.interpolateKey("ArrowRight", 1, deltaTime); 
+            return this.keySettings["ArrowRight"].value - this.keySettings["ArrowLeft"].value;
         } 
         
         if (axis === "Vertical") {
-            this.interpolateKey("s", 1, deltaTime);
-            this.interpolateKey("w", 1, deltaTime);
-            return this.keySettings["s"].value - this.keySettings["w"].value;
+            this.interpolateKey("w", 1, deltaTime); 
+            this.interpolateKey("s", 1, deltaTime); 
+            this.interpolateKey("ArrowUp", 1, deltaTime); 
+            this.interpolateKey("ArrowDown", 1, deltaTime);
+
+            const verticalInput = (this.keySettings["w"].value + this.keySettings["ArrowUp"].value) 
+                                - (this.keySettings["s"].value + this.keySettings["ArrowDown"].value);
+
+            return verticalInput;
         }
 
         return 0;

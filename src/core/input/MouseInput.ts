@@ -10,12 +10,15 @@ export default class MouseInput {
     private static scrollCallback: ((delta: { x: number, y: number }) => void) | null = null;
 
     public static initialize(): void {
+        const canvas = document.getElementById('canvas') as HTMLCanvasElement; // Seleciona o canvas pelo ID
+
         document.addEventListener('mousedown', this.handleButtonDown.bind(this));
         document.addEventListener('mouseup', this.handleButtonUp.bind(this));
         document.addEventListener('mousemove', (e) => {
-
-            MouseInput.position = new Vector3(e.clientX, e.clientY, 0);
+            const rect = canvas.getBoundingClientRect();
+            MouseInput.position = new Vector3(e.clientX - rect.left, e.clientY - rect.top, 0);
             MouseInput.movement = new Vector3(e.movementX, e.movementY, 0);
+          
         });
         document.addEventListener('wheel', this.handleScroll.bind(this));
     }

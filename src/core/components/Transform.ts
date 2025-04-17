@@ -1,20 +1,102 @@
 import Matrix4x4 from "../math/Matrix4x4";
-import { WindowScreen } from "../../main";
 import Camera from "./Camera";
 import Component from "./Component";
 import Quaternion from "../math/Quaternion";
 import Vector3 from "../math/Vector3";
-import Vector4 from "../math/Vector4";
 import GameObject from "./GameObject";
-import List from "./List";
+import Mathf from "../math/Mathf";
+import { Space } from "../enum/Space";
+import Color from "../math/color";
 
 export default class Transform extends Component {
     
-    position: Vector3;
-    rotation: Quaternion;
-    scale: Vector3;
+    private _position: Vector3;
+    private _rotation: Quaternion;
+    private _scale: Vector3;
 
-    public childrens: List<Transform>;
+    public get position(): Vector3 {
+        return this._position;
+    }
+   
+    public get rotation(): Quaternion {
+        return this._rotation;
+    }
+ 
+    public get scale(): Vector3 {
+        return this._scale;
+    }
+
+
+    public get globalPosition() {
+        return this.modelMatrix.getTranslation();
+    }
+   
+    private cachedModelMatrix: Matrix4x4 | null = null;
+    public modelChanged: boolean = false;
+    public static: boolean = true;
+    private clearModelCache() {
+        this.cachedModelMatrix = null;
+        this.modelChanged = true;
+    }
+    
+    public set position(position: Vector3) {
+        if (!this._position.equals(position)) {
+            this._position = position;
+            this.clearModelCache();
+        }
+    }
+
+    public set rotation(rotation: Quaternion) {
+        if (!this._rotation.equals(rotation)) {
+            this._rotation = rotation;
+            this.clearModelCache();
+        }
+    }
+    
+    public set scale(scale: Vector3) {
+        if (!this._scale.equals(scale)) {
+            this._scale = scale;
+            this.clearModelCache();
+        }
+    }
+
+    public get forward(): Vector3 {
+        return this._rotation.multiplyVector3(Vector3.FORWARD);
+    }
+
+    public get right(): Vector3 {
+        return this._rotation.multiplyVector3(Vector3.RIGHT);
+    }
+
+    public get up(): Vector3 {
+        return this._rotation.multiplyVector3(Vector3.UP);
+    }
+
+    private get localMatrix(): Matrix4x4 {
+
+        if(!this.cachedModelMatrix) {
+            this.cachedModelMatrix = Matrix4x4.composeMatrix(
+                this.position,  
+                this.rotation,  
+                this.scale  
+            );
+
+            this.modelChanged = false;
+        }
+       
+        return this.cachedModelMatrix;
+    }
+    
+    public get modelMatrix(): Matrix4x4 {
+        if (!this.parent) {
+            return this.localMatrix;
+        } else {
+            const parentMatrix = this.parent.modelMatrix;
+            return this.localMatrix.multiply(parentMatrix)
+        }
+    }
+
+    public childrens: Transform[] =[];
     private parent: Transform | null = null;
     
     public setParent(parent: Transform | null): void {
@@ -27,107 +109,127 @@ export default class Transform extends Component {
             this.parent = parent;
         }
 
-        if(!parent?.childrens.contains(this)) {
-            parent?.childrens.add(this);
+        if(!parent?.childrens.includes(this)) {
+            parent?.childrens.push(this);
         }
     }
     
     public get childCount(): number {
-        return this.childrens.count;
-    }
-
-
-    public getPositionOffset() {
-        return this.modelMatrix.getTranslation();
+        return this.childrens.length;
     }
 
     constructor(
-        postion: Vector3 = Vector3.zero, 
-        rotation: Quaternion = Quaternion.identity, 
+        position: Vector3 = Vector3.zero, 
+        rotation: Quaternion = Quaternion.IDENTITY, 
         scale: Vector3 = Vector3.one,
         gameObject: GameObject | null = null
     ) {
-        super("Transform");
-        this.position = postion;
-        this.rotation = rotation;
-        this.scale = scale;
-        this.childrens = new List<Transform>();
-        this._gameObject = gameObject;
-
-    }
-   
-    public get forward(): Vector3 {
-        return this.rotation.multiplyVector3(Vector3.forward);
-    }
-
-    public get right(): Vector3 {
-        return this.rotation.multiplyVector3(Vector3.right);
-    }
-
-    public get up(): Vector3 {
-        return this.rotation.multiplyVector3(Vector3.up);
-    }
-
-    public get modelMatrix(): Matrix4x4 {
-        const localMatrix = Matrix4x4.createModelMatrix(
-            this.position,  // Posição local
-            this.rotation,  // Rotação local
-            this.scale      // Escala local
-        );
+        super("Transform", "Transform");
+        this._position = position;
+        this._rotation = rotation;
+        this._scale = scale;
+        // this._gameObject = gameObject;
+    } 
     
-        if (!this.parent) {
-            return localMatrix;
+    public translate(newTranslation: Vector3, space: Space = Space.SELF): void {
+        switch (space) {
+            case Space.SELF:
+                const localTranslation = this._rotation.transformVector3(newTranslation);
+                this._position.addInPlace(localTranslation);
+                break;
+        
+            case Space.WORLD:
+                this._position = this._position.add(newTranslation);
+                break;
+            
+            default:
+                console.error('Espaço de translação inválido. Use Space.SELF ou Space.WORLD.');
+                return;
+        }
+      
+        this.clearModelCache();
+    }
+    
+    
+    /**
+     * Aplica uma rotação no objeto, com base no eixo e no ângulo fornecidos.
+     * 
+     * @param axis O eixo de rotação (um vetor tridimensional).
+     * @param angle O ângulo de rotação, em graus.
+     * @param space O espaço no qual a rotação ocorre. Pode ser `Space.SELF` (local) ou `Space.WORLD` (global). O padrão é `Space.SELF`.
+     */
+    public rotate(axis: Vector3, angle: number, space: Space = Space.SELF): void {
+        const normalizedAxis = axis.normalize(); 
+        const radians = Mathf.degToRad(angle);
+    
+        switch (space) {
+            case Space.SELF:
+                const rotationQuat = Quaternion.createRotationAxis(normalizedAxis, radians);
+                this._rotation = this._rotation.multiply(rotationQuat).normalized();
+                break;
+    
+            case Space.WORLD:
+                const localAxis = this._rotation.inverse().transformVector3(normalizedAxis);
+                const worldRotationQuat = Quaternion.createRotationAxis(localAxis, radians);
+                this._rotation = this._rotation.multiply(worldRotationQuat).normalized();
+                break;
+            
+            default:
+                console.error('Espaço de rotação inválido. Use Space.SELF ou Space.WORLD.');
+                return;
         }
     
-        const adjustedPosition = this.parent.rotation.multiplyVector3(this.transform.position);
-        const adjustedLocalMatrix = Matrix4x4.createModelMatrix(
-            adjustedPosition,
-            this.rotation,
-            this.scale
-        );
-
-        const matrix = this.parent.modelMatrix.multiply(adjustedLocalMatrix);
-        this.position = matrix.getTranslation();
-        return matrix;
+        this.clearModelCache();
     }
     
-    public translate(newTranslation: Vector3) {
-        this.position.increment(this.forward.scale(newTranslation.z));
-        this.position.increment(this.right.scale(newTranslation.x));
-        this.position.increment(this.up.scale(newTranslation.y));
-    }
-
-    public rotate(axis: Vector3, speed: number) {
-        this.rotation = this.rotation.multiply(Quaternion.createRotationAxis(axis, speed)).normalize();
+    public rotateAround(point: Vector3, axis: Vector3, angle: number): void {
+      
+        const normalizedAxis = axis.normalize();
+        const radians = Mathf.degToRad(angle);
+    
+        const offset = this.position.subtract(point);
+    
+        const rotationQuat = Quaternion.createRotationAxis(normalizedAxis, radians);
+        const rotatedOffset = rotationQuat.multiplyVector3(offset);
+    
+  
+        this.position = point.add(rotatedOffset);
+    
+        this.rotation = rotationQuat.multiply(this.rotation).normalized();
+        this.clearModelCache();
     }
     
 
     public transformPointToWorldSpace(point: Vector3): Vector3 {
         const modelMatrix = this.modelMatrix;
-        return Vector3.transform(point, modelMatrix);
+        return modelMatrix.multiplyVec3(point);
     }
 
     public transformPointToLocalSpace(point: Vector3): Vector3 {
         const inverseModel = this.modelMatrix.inverse();
-        const localSpace = inverseModel.multiplyVec3(point);
-        return localSpace;
+        return inverseModel.multiplyVec3(point);
     }
     
-    public transformScreenPointToWorldPoint(screenPoint: Vector3): Vector3 {
-        const ndc = WindowScreen.screenToNDC(screenPoint);
-        const clipCoords = new Vector4(ndc.x, ndc.y, -1, 1); // Definindo z como -1 para o plano perto
 
-        const camera = Camera. mainCamera;
-        const inverseProjectionMatrix = camera.projectionMatrix.inverse();
-        const cameraCoords = inverseProjectionMatrix.multiplyVec4(clipCoords).perspectiveDivide();
-        const inverseViewMatrix = camera.viewMatrix.inverse();
-        const worldPoint = inverseViewMatrix.multiplyVec4(new Vector4(cameraCoords.x, cameraCoords.y, cameraCoords.z, 1));
+    // public onDrawGizmos(): void {
+    //     const camera = Camera.main;
+    //     let distance = this.transform.position.distanceTo(camera.transform.position);
+    //     distance = Mathf.clamp(distance, 0.1, Infinity);
+    //     const scale = distance * 0.2;
 
-        return worldPoint.toVec3().normalize();
-    }
+    //     const globalXAxis = this.transform.right.multiplyScalar(scale);
+    //     const globalYAxis = this.transform.up.multiplyScalar(scale);
+    //     const globalZAxis = this.transform.forward.multiplyScalar(scale);
 
-    public drawGizmos() {
-        
-    }
+    //     const xEnd = this.transform.position.add(globalXAxis);
+    //     const yEnd = this.transform.position.add(globalYAxis);
+    //     const zEnd = this.transform.position.add(globalZAxis);
 
+    //     Gizmos.color = Color.RED;
+    //     Gizmos.drawLine(this.transform.position, xEnd);
+    //     Gizmos.color = Color.GREEN;
+    //     Gizmos.drawLine(this.transform.position, yEnd);
+    //     Gizmos.color = Color.BLUE;
+    //     Gizmos.drawLine(this.transform.position, zEnd);
+    // }
 }

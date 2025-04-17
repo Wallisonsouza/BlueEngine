@@ -3,9 +3,7 @@ import Vector3 from "../math/Vector3";
 import KeyInput from "./KeyInput";
 import MouseInput from "./MouseInput";
 
-
 export default class Input {
-    static mouseClicked: import("../physics/Ray").default;
     public static start(): void {
         KeyInput.initialize();
         MouseInput.initialize();

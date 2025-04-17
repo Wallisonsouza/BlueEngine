@@ -1,99 +1,441 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quasaris Egine</title>
-  </head>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
+    :root {
+        --interface-background-color: rgb(186, 186, 186);
+        --interface-text-color: rgb(34, 34, 34);
 
-  <style> 
-    .inputs {
-      position: absolute;
-      right: 0;
-      z-index: 99;
-      display: flex;
-      flex-direction: column;
+        --hierarchy-title-color: #b4c2c3;
+        --hierarchy-text-color: #868686;
+        --hierarchy-background-color: var(--interface-background-color);
     }
-  </style>
-  <body>
 
- 
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        border: 0;
 
-    <div class="inputs">
-      <label for="width-input">width</label>
-      <input type="range" name="width-input" id="width-input" max="1000" min="10">
+    }
+
+    .fps {
+        position: absolute;
+        color: rebeccapurple;
+        z-index: 999;
+    }
+
+    body {
+        display: flex;
+        position: relative;
+        font-family: 'Roboto', sans-serif;
+        width: 100%;
+        height: 100vh;
+        flex-wrap: wrap;
+    }
+
+    .drag {
+        background-color: blueviolet;
+    }
+
+    .desactived {
+        color: brown;
+    }
+
+    .dropdown-open {
+        background-image: url('/Chevron down.svg');
+        background-repeat: no-repeat;
+        background-position: right center;
+        background-size: 16px;
+        transform: rotate(0deg);
+    }
+
+    .horizontal-line-container {
+
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        overflow: hidden;
+        background-color: transparent;
+    }
 
 
-      <label for="depth-input">depth</label>
-      <input type="range" name="depth-input" id="depth-input" max="1000" min="10">
-    </div>
-    
-    <div class="layout">
-      
-      <div class="horizontal-line-container">
 
-        <div class="hierarchy-container">
-          <div class="hierarchy-title">Tree</div>
-          <div id="hierarchy-content"></div>
-        </div>
-      
-        <div class="render-area" id="render-area">
-          <div id="fps"></div>
-          <canvas id="canvas"></canvas>
-        </div>
 
-        <div class="inspector-container">
-          <div class="inspector-title">Inspector</div>
-          <div class="inspector-content" id="inspector">
-            <div class="transform-container">
-              <div class="transform-title">Transform</div>
-              <div class="transform-content">
-                <div class="vector3-container">
-                  <div class="vector3-title">Position</div>
-                  <div class="vector3-content">
-                    <div class="x-title">X</div>
-                    <input type="number" class="x" id="position-x"></input>
-                    <div class="y-title">Y</div>
-                    <input type="number" class="y" id="position-y"></input>
-                    <div class="z-title">Z</div>
-                    <input type="number" class="z" id="position-z"></input>
-                  </div>
-                </div>
-                <div class="vector3-container">
-                  <div class="vector3-title">Rotation</div>
-                  <div class="vector3-content">
-                    <div class="x-title">X</div>
-                    <input type="number" class="x" id="rotation-x"></input>
-                    <div class="y-title">Y</div>
-                    <input type="number" class="y" id="rotation-y"></input>
-                    <div class="z-title">Z</div>
-                    <input type="number" class="z" id="rotation-z"></input>
-                  </div>
-                </div>
+
+    .layout {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+    }
+
+    .files {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(25, 25, 25);
+    }
+
+    .fps {
+
+        top: 0;
+        left: 0;
+        z-index: 999;
+        position: absolute;
+        color: rgb(255, 0, 0);
+        padding: 4px;
+        font-size: 14px;
+        height: 100%;
+        overflow-y: scroll;
+        pointer-events: none;
+
+    }
+
+    .canvas-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
   
-                <div class="vector3-container">
-                  <div class="vector3-title">Scale</div>
-                  <div class="vector3-content">
-                    <div class="x-title">X</div>
-                    <input type="number" class="x" id="scale-x"></input>
-                    <div class="y-title">Y</div>
-                    <input type="number" class="y" id="scale-y"></input>
-                    <div class="z-title">Z</div>
-                    <input type="number" class="z" id="scale-z"></input>
-                  </div>
-                </div>
-              </div>
-             
+    }
+
+    canvas {
+        background-color: #252525;
+        display: flex;
+        width: 100%;
+        height: 100%;
+    }
+
+
+    .hierarchy-container {
+
+        display: none;
+        width: 240px;
+        height: 100%;
+        flex-shrink: 0;
+        flex-direction: column;
+        overflow: hidden;
+
+        & .hierarchy-title {
+
+            overflow: hidden;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-items: center;
+            color: var(--hierarchy-title-color);
+            padding: 4px;
+            background-color: rgb(39, 39, 39);
+            font-weight: 300;
+            font-size: 16px;
+        }
+
+        & #hierarchy-content {
+            color: var(--hierarchy-text-color);
+            width: 100%;
+            height: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            position: relative;
+            background-color: var(--hierarchy-background-color);
+        }
+    }
+
+    .inspector-container {
+        display: none;
+        width: 240px;
+        position: relative;
+        flex-shrink: 0;
+
+        & .inspector-title {
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+            height: 24px;
+        }
+
+        & .inspector-content {
+            background-color: var(--interface-background-color);
+            width: 100%;
+            height: 100%;
+        }
+
+    }
+
+    .transform-container {
+
+        color: white;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        background-color: rgba(159, 159, 159, 0.671);
+
+        & .transform-title {
+            height: 24px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            background-color: #a1a1a1;
+
+        }
+
+        & .transform-content {
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+        }
+
+    }
+
+    .vector3-container {
+        display: flex;
+        align-items: center;
+        padding: 4px;
+
+        & .vector3-title {
+            height: 24px;
+            width: 100%;
+            display: flex;
+            display: flex;
+            align-items: center;
+        }
+
+        .vector3-content {
+            display: flex;
+            gap: 8px;
+
+            & .x-title,
+            .y-title,
+            .z-title {
+                color: rgb(255, 255, 255);
+            }
+
+            & .x,
+            .y,
+            .z {
+                width: 100%;
+            }
+
+        }
+    }
+
+    .inputs-area {
+        right: 0;
+        position: absolute;
+        width: 200px;
+
+        z-index: 99;
+    }
+
+    .inputs-area input {
+        width: 100%;
+        height: 16px;
+    }
+
+    body {
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    .up-bar {
+
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+        background-color: #a1a1a1d0;
+        width: 100%;
+        gap: 8px;
+        max-height: 32px;
+
+    }
+
+    #loading-bar {
+        width: 500px;
+        height: 32px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #252525;
+
+        & #progress {
+            width: 50%;
+            height: 100%;
+            background-color: #66ff00;
+            
+        }
+    }
+
+    #errors {
+        width: 100%;
+        height: 100%;
+        z-index: 999;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        color: aliceblue;
+        justify-content: center;
+        pointer-events: none;
+    }
+
+    .message-count {
+        background-color: rgb(0, 183, 255);
+        color: aliceblue;
+        padding: 2px 8px;
+        border-radius: 8px;
+        margin-left: auto;
+      
+    }
+
+    .message-line {
+      
+        display: flex;  
+        align-items: center;
+        padding: 0 8px;
+        border-bottom: 1px solid rgb(0, 0, 0);
+        width: 100%;
+        height: 30px;
+       
+    }
+
+    .message-text, .message-count {
+        display: flex;
+        font-size: 14px;
+        white-space: nowrap;      /* Impede quebra de linha */
+        overflow: hidden;         /* Oculta o excesso de texto */
+        text-overflow: ellipsis;  /* Adiciona "..." no final do texto, se necessário */flex-shrink: 0;
+    }
+
+    .message-space {
+        font-size: 14px;
+        border: 1px solid rgb(53, 53, 53);
+    }
+
+
+    .console-container {
+        font-family: 'Roboto', sans-serif;
+        position: absolute;
+        background-color: rgba(143, 143, 143, 0.486);
+        width: 100%;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        font-size: 12px;
+        max-height: 200px;
+        overflow-y: auto;
+        outline: none;
+        z-index: 900;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
+     
+        & #console-input{
+            width: 100%;
+         
+            outline: none;
+            height: 32px;
+            background-color: #1d1d1d;
+            color: white;
+            padding: 0 8px;
+        }
+        & #console-output{
+            width: 100%;
+            color: white;
+            padding: 0 8px;
+            background-color: #252525;
+        }
+   
+    }
+
+    .material-options-container {
+       width: 800px;
+       height: 100%;
+       z-index: 999;
+       right: 0;
+       background-color: #1d1d1d;
+       position: absolute;
+       display: flex;
+    }
+
+    .material-options-container img {
+        width: 100%;
+    }
+
+
+    #cubeMap {
+    width: 100%;
+    position: absolute;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.cube-map-line {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.face, .empty {
+    width: 200px;  /* Aumenta com a largura da tela */
+    height: 200px; /* Mantém proporção de largura e altura */
+    box-sizing: border-box;
+}
+.face {
+    width: 200px;  /* Aumenta com a largura da tela */
+    height: 200px; /* Mantém proporção de largura e altura */
+    box-sizing: border-box;
+    border:  1px solid rgba(255, 255, 255, 0.117);
+}
+
+  #debug{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+  }
+
+</style>
+
+<body>
+    <div class="layout">
+
+        <div id="up-bar" class="up-bar debug"></div>
+      
+
+        <div class="horizontal-line-container">
+
+            <div class="canvas-container">
+                <div id="debug"></div>
+                <canvas id="canvas"></canvas>
             </div>
-          </div>
 
         </div>
-      
-      </div>
-     
+
     </div>
     <script type="module" src="/src/main.ts"></script>
-  </body>
+  
+</body>
+
 </html>

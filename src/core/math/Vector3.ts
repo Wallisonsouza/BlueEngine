@@ -10,64 +10,34 @@ export default class Vector3 {
     public toVec4(){
         return new Vector4(this.x, this.y, this.z, 1);
     }
-    public static get one(): Vector3 {
-        return new Vector3(1, 1, 1);
-    }
-
-    public static get up(): Vector3 {
-        return new Vector3(0, 1, 0);
-    }
-    public static get forward(): Vector3 {
-        return new Vector3(0, 0, 1);
-    }
-    public static get right(): Vector3 {
-        return new Vector3(1, 0, 0);
-    }
-
-    public static get backward(): Vector3 {
-        return new Vector3(0, 0, -1);
-    }
-
-    public static get down(): Vector3 {
-        return new Vector3(0, -1, 0);
-    }
-
-   
-
-    public static get left(): Vector3 {
-        return new Vector3(-1, 0, 0);
-    }
-
-    public static get zero(): Vector3 {
-        return new Vector3(0, 0, 0);
-    }
-
-    public static get negativeOne(): Vector3 {
-        return new Vector3(-1, -1, -1);
-    }
-
-    public static get upRight(): Vector3 {
-        return new Vector3(1, 1, 0);
-    }
-
-    public static get upForward(): Vector3 {
-        return new Vector3(0, 1, 1);
-    }
-
-    public static get downLeft(): Vector3 {
-        return new Vector3(-1, -1, 0);
-    }
+    
+    public static readonly SIZE = 3;
+    public static readonly one = new Vector3(1, 1, 1);
+    public static readonly UP = new Vector3(0, 1, 0);
+    public static readonly FORWARD = new Vector3(0, 0, 1);
+    public static readonly RIGHT = new Vector3(1, 0, 0);
+    public static readonly BACK = new Vector3(0, 0, -1);
+    public static readonly DOWN = new Vector3(0, -1, 0);
+    public static readonly LEFT = new Vector3(-1, 0, 0);
+    public static readonly zero = new Vector3(0, 0, 0);
 
     public clone(){
         return new Vector3(this.x, this.y, this.z);
     }
 
+    public set(x: number, y: number, z: number): Vector3 {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        return this; 
+    }
+ 
     static random(min: number = 0, max: number = 1): Vector3 {
-        const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
         return new Vector3(
-            randomInRange(min, max), // Valor aleatório para x
-            randomInRange(min, max), // Valor aleatório para y
-            randomInRange(min, max)  // Valor aleatório para z
+            Mathf.randomRange(min, max),
+            Mathf.randomRange(min, max),
+            Mathf.randomRange(min, max) 
         );
     }
 
@@ -82,26 +52,28 @@ export default class Vector3 {
         return new Vector3(x, y, z);
     }
 
+    public addInPlace(other: Vector3): this {
+        this.x += other.x;
+        this.y += other.y;
+        this.z += other.z;
+        return this;
+    }
+
+
     constructor(x: number = 0, y: number = 0, z: number = 0) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-
     public static abs(v: Vector3) {
         return new Vector3(Math.abs(v.x), Math.abs(v.y), Math.abs(v.z))
     }
 
-
     public static fromNumber(v: number) {
         return new Vector3(v, v, v);
     }
-
-    degToRad(): Vector3 {
-        return new Vector3(this.x * Math.PI / 180, this.y * Math.PI / 180, this.z* Math.PI / 180);
-    }
-
+  
     add(vector: Vector3): Vector3 {
         return new Vector3(this.x + vector.x, this.y + vector.y, this.z + vector.z);
     }
@@ -123,17 +95,17 @@ export default class Vector3 {
     increment(vector: Vector3): Vector3 {
         return new Vector3(this.x += vector.x, this.y += vector.y, this.z += vector.z);
     }
-    public equals(other: Vector3, tolerance: number = 1e-6): boolean {
-        return Math.abs(this.x - other.x) < tolerance &&
-               Math.abs(this.y - other.y) < tolerance &&
-               Math.abs(this.z - other.z) < tolerance;
-    }
+   
 
+    public equals(other: Vector3, tolerance: number = 1e-6): boolean {
+        return Mathf.abs(this.x - other.x) < tolerance &&
+               Mathf.abs(this.y - other.y) < tolerance &&
+               Mathf.abs(this.z - other.z) < tolerance;
+    }
 
     lengthSquared(): number {
         return this.x * this.x + this.y * this.y + this.z * this.z;
     }
-
 
     subtract(vector: Vector3): Vector3 {
         return new Vector3(this.x - vector.x, this.y - vector.y, this.z - vector.z);
@@ -145,6 +117,7 @@ export default class Vector3 {
         const z = vector.z !== 0 ? this.z / vector.z : 0;
         return new Vector3(x, y, z);
     }
+    
     multiply(vector: Vector3): Vector3 {
         return new Vector3(this.x * vector.x, this.y * vector.y, this.z * vector.z);
     }
@@ -213,6 +186,12 @@ export default class Vector3 {
         const dy = this.y - other.y;
         const dz = this.z - other.z;
         return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+    public static squaredDistance(a: Vector3, b: Vector3): number {
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const dz = a.z - b.z;
+        return dx * dx + dy * dy + dz * dz;
     }
 
     public static increment(a: Vector3, b: Vector3): Vector3 {
@@ -321,13 +300,22 @@ export default class Vector3 {
 
 
 
-    public static f32ArrayToVector3Array(data: Float32Array): Vector3[] {
+    public static fromF32Array(data: Float32Array): Vector3[] {
         const vectors: Vector3[] = [];
         for (let i = 0; i < data.length; i += 3) {
             vectors.push(new Vector3(data[i], data[i + 1], data[i + 2]));
         }
         return vectors;
     }
+
+    static min(a: Vector3, b: Vector3): Vector3 {
+        return new Vector3(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));
+    }
+    
+    static max(a: Vector3, b: Vector3): Vector3 {
+        return new Vector3(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z));
+    }
+    
     
     public static applyMin(v: Vector3, minValue: number): Vector3 {
         return new Vector3(
@@ -344,4 +332,22 @@ export default class Vector3 {
             Math.min(v.z, maxValue)
         );
     }
+
+    public get xyz() {
+        return [this.x, this.y, this.z];
+    }
+
+    public static clamp(v: Vector3, min: Vector3, max: Vector3): Vector3 {
+        return new Vector3(
+            Math.max(min.x, Math.min(v.x, max.x)),
+            Math.max(min.y, Math.min(v.y, max.y)),
+            Math.max(min.z, Math.min(v.z, max.z))
+        );
+    }
+
+    toFloat32Array(): Float32Array {
+        return new Float32Array([this.x, this.y, this.z]);
+    }
+
+    
 }

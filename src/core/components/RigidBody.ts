@@ -1,13 +1,12 @@
 import Time from "../Time";
+import { ForceMode } from "../enum/ForceMode";
+import { RenderMode } from "../enum/RenderMode";
+import Gizmos from "../../../deprecated/Gizmos";
 import Quaternion from "../math/Quaternion";
 import Vector3 from "../math/Vector3";
+import Color from "../math/color";
+import CollisionData from "./collision/CollisionData";
 import Component from "./Component";
-
-
-export enum ForceMode {
-    Force,
-    Impulse
-}
 
 export default class Rigidbody extends Component {
     public mass: number;
@@ -19,10 +18,12 @@ export default class Rigidbody extends Component {
     public angularVelocity: Vector3; // Velocidade angular
     public centerOfMass: Vector3;
 
-    private torque: Vector3; // Acumulador para torque
+    private continuousForces: Vector3; // Forças contínuas acumuladas
+    private impulseForces: Vector3;    // Forças instantâneas acumuladas
+    private torque: Vector3;          // Torque acumulado
 
     constructor() {
-        super();
+        super("RigidBody", "RigidBody");
         this.mass = 1.0;
         this.drag = 0.1;
         this.angularDrag = 0.05;
@@ -31,72 +32,111 @@ export default class Rigidbody extends Component {
         this.velocity = Vector3.zero;
         this.angularVelocity = Vector3.zero;
         this.centerOfMass = Vector3.zero;
+
+        this.continuousForces = Vector3.zero;
+        this.impulseForces = Vector3.zero;
         this.torque = Vector3.zero;
     }
 
-    // Aplica uma força ou um impulso instantâneo
-    public addForce(force: Vector3, mode: ForceMode = ForceMode.Force): void {
-        const acceleration = force.divideScalar(this.mass);
-        switch (mode) {
-            case ForceMode.Force:
-                this.velocity = this.velocity.add(acceleration.multiplyScalar(Time.fixedDeltaTime));
-                break;
-            case ForceMode.Impulse:
-                this.velocity = this.velocity.add(acceleration);
-                break;
+    /**
+     * Aplica uma força ao Rigidbody.
+     * @param force Vetor da força.
+     * @param mode Define se a força é contínua ou um impulso instantâneo.
+     */
+    public addForce(force: Vector3, mode: ForceMode = ForceMode.FORCE): void {
+        if (mode === ForceMode.FORCE) {
+            this.continuousForces = this.continuousForces.add(force);
+        } else if (mode === ForceMode.IMPULSE) {
+            this.impulseForces = this.impulseForces.add(force);
         }
     }
 
-    // Aplica uma força em uma posição específica, causando rotação se não for no centro de massa
-    public addForceAtPosition(force: Vector3, position: Vector3, mode: ForceMode = ForceMode.Force): void {
-        const effectiveForce = mode === ForceMode.Force ? force.multiplyScalar(Time.fixedDeltaTime) : force;
+    /**
+     * Aplica uma força em uma posição específica, causando rotação.
+     */
+    public addForceAtPosition(force: Vector3, position: Vector3, mode: ForceMode = ForceMode.FORCE): void {
+        const effectiveForce = mode === ForceMode.FORCE ? force : force.divideScalar(this.mass);
 
-        // Atualiza a velocidade linear
+        // Atualiza a força linear
         this.addForce(effectiveForce, mode);
-        
-        const relativePosition = position.subtract(this.centerOfMass); // Vetor posição relativo ao centro de massa
-        this.torque = this.torque.add(relativePosition.cross(effectiveForce)); // Acumula o torque
+
+        const relativePosition = position.subtract(this.centerOfMass);
+        this.torque = this.torque.add(relativePosition.cross(effectiveForce));
     }
 
     private calculateDragFactor(dragFactor: number, deltaTime: number): number {
-        return 1 - (dragFactor * deltaTime);
+        return Math.max(0, 1 - dragFactor * deltaTime);
     }
 
-    // Atualiza o estado do Rigidbody a cada frame
-    public update(deltaTime: number = Time.fixedDeltaTime): void {
-        // Aplica gravidade, se necessário
-        if (this.useGravity) {
-            const gravityForce = this.gravity.multiplyScalar(this.mass); // F = m * g
-            this.addForce(gravityForce, ForceMode.Force);
-        }
-
-        // Aplica arrasto linear à velocidade
-        const linearDragFactor = this.calculateDragFactor(this.drag, deltaTime);
-        this.velocity = this.velocity.multiplyScalar(linearDragFactor);
-
-        // Atualiza a posição do objeto
-        this.transform.position = this.transform.position.add(this.velocity.multiplyScalar(deltaTime));
-
-        // Calcula a aceleração angular e atualiza a rotação
-        this.angularVelocity = this.angularVelocity.add(this.torque.divideScalar(this.mass).multiplyScalar(deltaTime));
-        
-        // Aplica arrasto angular
-        const angularDragFactor = this.calculateDragFactor(this.angularDrag, deltaTime);
-        this.angularVelocity = this.angularVelocity.multiplyScalar(angularDragFactor);
-
-        // Atualiza a rotação do objeto com base na velocidade angular
-        this.transform.rotation = Quaternion.multiplyQuat(
-            this.transform.rotation,
-            Quaternion.fromEulerAngles(this.angularVelocity.multiplyScalar(deltaTime))
-        );
-
-        // Reseta o torque acumulado para o próximo frame
-        this.torque = Vector3.zero;
-    }
-
-    // Reseta a velocidade do Rigidbody
+    /**
+     * Reseta a velocidade e torque do Rigidbody.
+     */
     public resetVelocity(): void {
         this.velocity = Vector3.zero;
         this.angularVelocity = Vector3.zero;
+        this.torque = Vector3.zero;
+    }
+
+    public fixedUpdate(): void {
+      
+        if (this.useGravity) {
+            this.continuousForces = this.continuousForces.add(this.gravity.multiplyScalar(this.mass));
+        }
+
+        // Aplica todas as forças acumuladas
+        const totalForces = this.continuousForces.add(this.impulseForces);
+        const acceleration = totalForces.divideScalar(this.mass);
+        this.velocity = this.velocity.add(acceleration.multiplyScalar(Time.fixedDeltaTime));
+
+        // Limpa as forças instantâneas
+        this.impulseForces = Vector3.zero;
+
+        // Aplica arrasto linear
+        const linearDragFactor = this.calculateDragFactor(this.drag, Time.fixedDeltaTime);
+        this.velocity = this.velocity.multiplyScalar(linearDragFactor);
+
+        // Atualiza posição
+        this.transform.position = this.transform.position.add(this.velocity.multiplyScalar(Time.fixedDeltaTime));
+
+        // Atualiza rotação com torque
+        const angularAcceleration = this.torque.divideScalar(this.mass);
+        this.angularVelocity = this.angularVelocity.add(angularAcceleration.multiplyScalar(Time.fixedDeltaTime));
+
+        // Aplica arrasto angular
+        const angularDragFactor = this.calculateDragFactor(this.angularDrag, Time.fixedDeltaTime);
+        this.angularVelocity = this.angularVelocity.multiplyScalar(angularDragFactor);
+
+        // Atualiza rotação
+        this.transform.rotation = Quaternion.multiplyQuat(
+            this.transform.rotation,
+            Quaternion.fromEulerAnglesVector3(this.angularVelocity.multiplyScalar(Time.fixedDeltaTime))
+        );
+
+        this.continuousForces = Vector3.zero;
+        this.torque = Vector3.zero;
+
+    }
+
+
+    public onCollisionEnter(data: CollisionData): void {
+        this.useGravity = false;
+        this.resetVelocity();
+      
+    }
+
+    public onCollisionStay(data: CollisionData): void {
+        this.useGravity = false;
+        this.resetVelocity();
+
+    }
+    
+    public onCollisionExit(data: CollisionData): void {
+        this.useGravity = true;
+    }
+
+    public onDrawGizmos(): void {
+        // Gizmos.color = Color.YELLOW;
+        // const center = this.centerOfMass.add(this.transform.position);
+        // Gizmos.drawSphere(center, 1.0, Quaternion.IDENTITY, RenderMode.TRIANGLES)
     }
 }

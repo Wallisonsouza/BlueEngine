@@ -1,8 +1,12 @@
+import GameObject from "../components/GameObject";
+import Light from "../components/light/Light";
+import LightManager from "../components/light/LightManager";
 import Scene from "../components/Scene";
+import { NullReferenceException } from "../Error";
 
 export default class SceneManager {
     private static _scenes: Scene[] = [];
-    private static _currentScene: Scene = new Scene();
+    private static _currentScene: Scene | null = null;
 
     public static addScene(scene: Scene): void {
         if (!this._scenes.includes(scene)) {
@@ -14,7 +18,6 @@ export default class SceneManager {
     public static getSceneByIndex(index: number): Scene | null {
         return this._scenes[index] || null;
     }
-
   
     public static getSceneByName(name: string): Scene | null {
         return this._scenes.find(scene => scene.name === name) || null;
@@ -38,6 +41,15 @@ export default class SceneManager {
     }
 
     public static getCurrentScene(): Scene {
+        if (!this._currentScene) {
+            const exception = new NullReferenceException(
+                "SceneManager", 
+                "Falha ao acessar a cena atual.", 
+                "A cena pode não ter sido inicializada corretamente. Verifique se 'setCurrentScene' foi chamado antes de 'getCurrentScene'."
+            );
+            console.error(exception.message); // Logar o erro no console
+            throw exception; // Lançar a exceção personalizada
+        }
         return this._currentScene;
     }
 
@@ -47,5 +59,36 @@ export default class SceneManager {
             return;
         }
         this.setCurrentScene(scene);
+    }
+
+    public static getAllGameObjects() {
+        const scene = this.getCurrentScene();
+        return scene.getAllGameObjects();
+    }
+
+    public static getGameObjectByName(name: string) {
+        return this._currentScene?.getGameObjectByName(name);
+    }
+
+    public static getGameObjectByTag(tag: string) {
+       return this._currentScene?.getGameObjectsByTag(tag)[0];
+      
+    }
+
+    public static addGameObject(newGameObject: GameObject) {
+
+        const lights = newGameObject.getComponentByGroup<Light>("Light");
+        if(lights) {
+            lights.forEach( l => {
+                LightManager.addLight(l);
+            })
+        }
+      
+        return this._currentScene?.addGameObject(newGameObject);
+    }
+    public static addGameObjects(gameObjects: GameObject[]) {
+        for(const gameObject of gameObjects) {
+            this.addGameObject(gameObject);
+        }
     }
 }

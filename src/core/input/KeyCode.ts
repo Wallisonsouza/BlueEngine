@@ -1,5 +1,5 @@
 export enum KeyCode {
-    // Teclas de controle
+  
     Backspace = "Backspace",
     Tab = "Tab",
     Enter = "Enter",
@@ -14,8 +14,6 @@ export enum KeyCode {
     Delete = "Delete",
     Meta = "Meta",
     ContextMenu = "ContextMenu",
-
-    // Navegação
     PageUp = "PageUp",
     PageDown = "PageDown",
     End = "End",
@@ -24,8 +22,6 @@ export enum KeyCode {
     Up = "ArrowUp",
     Right = "ArrowRight",
     Down = "ArrowDown",
-
-    // Função
     F1 = "F1",
     F2 = "F2",
     F3 = "F3",
@@ -38,12 +34,8 @@ export enum KeyCode {
     F10 = "F10",
     F11 = "F11",
     F12 = "F12",
-
-    // Bloco numérico
     NumLock = "NumLock",
     ScrollLock = "ScrollLock",
-
-    // Alfanumérico
     Key0 = "0",
     Key1 = "1",
     Key2 = "2",
@@ -80,10 +72,8 @@ export enum KeyCode {
     X = "x",
     Y = "y",
     Z = "z",
-
-    // Símbolos
     Semicolon = ";",
     Equal = "=",
-    Comma = ",", // Adicionando a vír
+    Comma = ",", 
     
 }

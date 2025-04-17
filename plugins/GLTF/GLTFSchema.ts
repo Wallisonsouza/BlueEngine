@@ -1,4 +1,3 @@
-
 export type VEC3 = [number, number, number];
 export type VEC4 = [number, number, number, number];
 
@@ -69,23 +68,32 @@ export interface GLTFNode {
     children?: number[]; 
 }
 
-export interface GLTFPbrMetallicRoughness {
-    baseColorFactor?: VEC4;
-    metallicFactor?: number;
-    metallicRoughnessTexture?: GLTFBaseTexture;
-    roughnessFactor?: number;
-    baseColorTexture?: GLTFBaseTexture;
-}
-
-export interface GLTFMaterial {
-    name?: string;
-    normalTexture?: GLTFBaseTexture;
-    pbrMetallicRoughness?: GLTFPbrMetallicRoughness;
+export interface GLTFSamplers {
+   magFilter: number;
+   minFilter: number;
 }
 
 export interface GLTFBaseTexture {
     index: number;
     texCoord: number;
+}
+
+export interface GLTFPbrMetallicRoughness {
+    baseColorFactor?: VEC4;
+    baseColorTexture?: GLTFBaseTexture;
+    metallicFactor?: number;
+    roughnessFactor?: number;
+    metallicRoughnessTexture?: GLTFBaseTexture;
+}
+
+export interface GLTFMaterial {
+    emissiveFactor?: VEC3; 
+    emissiveTexture?: GLTFBaseTexture;
+    alphaMode?: string; 
+    name?: string
+    normalTexture?: GLTFBaseTexture;
+    occlusionTexture?: GLTFBaseTexture;
+    pbrMetallicRoughness?: GLTFPbrMetallicRoughness;
 }
 
 export interface GLTFAsset {
@@ -103,22 +111,16 @@ export interface GLTF {
     images: GLTFImage[];
     textures: GLTFTexture[];
     materials: GLTFMaterial[];
+    samplers: GLTFSamplers[];
 }
 
 export interface GLTFTexture {
     sampler: number;
-    source: number; 
+    source: number;
 }
 
 export interface GLTFImage {
-    uri: string;            
-    mimeType: string; 
-    name?: string;
-}
-
-export interface GLTFExtensions {
-   "KHR_materials_clearcoat":{
-					"clearcoatFactor":1,
-					"clearcoatRoughnessFactor":0.03999999910593033
-				}
+    uri: string;             // Caminho para a imagem da textura
+    mimeType: string;        // Tipo MIME da imagem
+    name?: string;           // Nome opcional da imagem
 }

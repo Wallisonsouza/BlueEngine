@@ -8,21 +8,34 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,  // Permite a geração de arquivos .js
 
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+
+    /* Pasta de saída dos arquivos compilados */
+    "outDir": "./dist"  // Mover esta linha para dentro de "compilerOptions"
   },
+
   "include": [
-    "src",
-    "assets",
-    "plugins"
-  ]
+    "src/**/*",
+    "assets/**/*",
+    "plugins/**/*",
+    "scrypts/**/*",
+    "engine/**/*",
+    "public/**/*",
+    "vite.config.js",
+    "game/**/*"
+, "deprecated/Gizmos.ts", "deprecated/TextureManager.ts", "deprecated/BufferManager.ts", "deprecated/ErrorComponent.ts"   ],
+
+  "exclude": [
+    "node_modules",
+    "dist"  // Excluir a pasta dist para evitar compilação nela mesma
+  ],
 }
