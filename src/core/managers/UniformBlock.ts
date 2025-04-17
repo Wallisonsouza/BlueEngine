@@ -55,7 +55,7 @@ export default class UniformBlock {
 
         BufferManager.createUniformBuffer(identifier, config);
 
-        for (const [key, property] of this.properties) {
+        for (const [_, property] of this.properties) {
             if (this.id && property) {
                 const object: UniformBufferObject = {
                     id: this.id,

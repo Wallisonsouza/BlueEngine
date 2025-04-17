@@ -1,13 +1,11 @@
 import Entity from "../../components/Entity";
 import { AlphaMode } from "../../enum/AlphaMode";
-import ShaderManager from "../../managers/ShaderManager";
 import UniformBlock from "../../managers/UniformBlock";
 import Color from "../../math/color";
 import Vector2 from "../../math/Vector2";
-import MaterialManager from "../mesh/MaterialManager";
 import Shader from "../shaders/Shader";
 
-export default class Material extends Entity {
+export default abstract class Material extends Entity {
 
 
     public shader: Shader;
@@ -42,26 +40,18 @@ export default class Material extends Entity {
     }
     
 
-    constructor(name = "", shader?: Shader) {
+    constructor(name = "new material", shader: Shader) {
         super();
         this.name = name;
-        this.shader = shader ?? ShaderManager.getShader("3d");
-
+        this.shader = shader;
 
         this.uniformBlock.defineVec3("color", new Float32Array(this._color.rgb));
         this.uniformBlock.defineFloat("alpha", 1.0);
-       
     }
 
     public get isTransparent(): boolean {
         return this.alphaMode !== AlphaMode.OPAQUE || this._alpha < 1.0;
     }
 
-    apply() {
-        
-      
-    }
-    update() {
-        
-    }
+    abstract apply(): void;
 }

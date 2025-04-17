@@ -32,7 +32,7 @@
     "public/**/*",
     "vite.config.js",
     "game/**/*"
-, "deprecated/Gizmos.ts", "deprecated/TextureManager.ts", "deprecated/BufferManager.ts", "deprecated/ErrorComponent.ts"   ],
+, "deprecated/Gizmos.ts", "deprecated/TextureManager.ts", "deprecated/BufferManager.ts", "deprecated/ErrorComponent.ts", "deprecated/RigidBody.ts"   ],
 
   "exclude": [
     "node_modules",

@@ -4,7 +4,6 @@ import Vector3 from "../../../math/Vector3";
 import Texture from "../Texture";
 import LoadResources from "../../../managers/LoadResources";
 import Camera from "../../../components/Camera";
-import Light from "../../../components/light/Light";
 import WorldOptions from "../../../../../engine/WorldOptions";
 import { TextureType } from "../../../enum/TextureType";
 import Display from "../../../components/Display";
@@ -13,69 +12,44 @@ import AmbientLight from "../../../components/light/AmbientLight";
 import BufferManager from "../../../managers/BufferManager";
 import { NullReferenceException } from "../../../Error";
 import LightManager from "../../../components/light/LightManager";
+import State from "../../../State";
+import UniformBlock from "../../../managers/UniformBlock";
 
+
+function uniformFloatState(initial: number, uniformBlock: UniformBlock, name: string): State<number> {
+    return new State(
+        initial,
+        (v) => uniformBlock.setFloat(name, v),
+        (a, b) => a !== b
+    );
+}
+
+function uniformVec3State(initial: Vector3, uniformBlock: UniformBlock, name: string): State<Vector3> {
+    return new State(
+        initial,
+        (v) => uniformBlock.setVec3(name, v.toFloat32Array()),
+        (a, b) => !a.equals(b)
+    );
+}
 
 export default class PBRMaterial extends Material {
-    
-    private _metallic: number = 0.2;
-    private _roughness: number = 0.4;
-    private _ior: number = 1.5;
-    private _emissive: Vector3 = Vector3.zero;
-    
-    public emissiveTexture: Texture | null = null;
-    public ambientOcclusion: Texture | null = null;
+
     public baseColorTexture: Texture | null = null;
     public normalTexture: Texture | null = null;
     public metallicRoughnessTexture: Texture | null = null;
+    public emissiveTexture: Texture | null = null;
+    public ambientOcclusion: Texture | null = null;
     public lutTexture: Texture | null = null;
-    
-    public get metallic() {
-        return this._metallic;
-    }
-    public get roughness() {
-        return this._roughness;
-    }
-    public get ior() {
-        return this._ior;
-    }
-    public get emissive() {
-        
-        return this._emissive;
-    }
 
-    public set metallic(value: number) {
-        if (this._metallic !== value) {
-            this._metallic = value;
-            this.uniformBlock.setFloat("metallic", value);
-        }
-    }
-    
-    public set roughness(value: number) {
-        if (this._roughness !== value) {
-            this._roughness = value;
-            this.uniformBlock.setFloat("roughness", value);
-        }
-    }
-    
-    public set ior(value: number) {
-        if (this._ior !== value) {
-            this._ior = value;
-            this.uniformBlock.setFloat("ior", value);
-        }
-    }
-    
-    public set emissive(value: Vector3) {
-        if (!this._emissive.equals(value)) {
-            this._emissive = value;
-            this.uniformBlock.setVec3("emisive", value.toFloat32Array());
-        }
-    }
-   
+    private metallicState: State<number> = uniformFloatState(0.2, this.uniformBlock, "metallic");
+    private roughnessState: State<number> = uniformFloatState(0.4, this.uniformBlock, "roughness");
+    private iorState: State<number> = uniformFloatState(1.5, this.uniformBlock, "ior");
+    private emissiveState: State<Vector3> = uniformVec3State(new Vector3(0, 0, 0), this.uniformBlock, "emissive");
+    private flag = 0;
+
     constructor() {
-       
         const shader = ShaderManager.getShader("3d");
-
-        if(! shader) {
+        if (!shader) {
             throw new NullReferenceException("[PBRMaterial]", "Shader principal não encontrado.");
         }
 
@@ -87,147 +61,140 @@ export default class PBRMaterial extends Material {
         this.uniformBlock.defineVec3("emissive", this.emissive.toFloat32Array());
         this.uniformBlock.createBuffer(this.id.value);
 
-        
-        this.start();
-     
+        this.initializeShaderUniforms();
         Display.applyResolution();
-
     }
 
-    flag = 0;
+    // === Getters e Setters ===
 
-    public start() {
+    public get metallic() { return this.metallicState.get(); }
+    public set metallic(value: number) { this.metallicState.set(value); }
 
-        if(!this.shader) {return};
-        this.shader.setGlobalUniforms = () => {
-            this.shader.use();
-            const camera = Camera.main;
-            this.shader.setVec3("u_viewPosition", camera.transform.position);
-            this.applyLight();
-            this.shader.setInt("u_renderPass", WorldOptions.renderPass);
+    public get roughness() { return this.roughnessState.get(); }
+    public set roughness(value: number) { this.roughnessState.set(value); }
 
+    public get ior() { return this.iorState.get(); }
+    public set ior(value: number) { this.iorState.set(value); }
 
-            const buffer = BufferManager.getUniformBuffer(camera.id.value);
-            BufferManager.updateCameraBuffer(camera);
-            if(buffer) {
-                this.shader.setUniformBuffer(buffer, "CameraUniform", 0);
-            }
+    public get emissive(): Vector3 { return this.emissiveState.get(); }
+    public set emissive(value: Vector3) { this.emissiveState.set(value); }
 
+    // === Métodos Públicos ===
 
-           
-            
-            // this.shader.setMat4("u_view", camera.viewMatrix);
-            // this.shader.setMat4("u_projection", camera.projectionMatrix);
-
-            // this.flag |= TextureType.ENVIRONMENT;
-            // this.shader.setInt("u_textureFlags", this.flag);
-            // this.shader.setSampleCube("u_skyBox", WorldOptions.environmentTexture, 6);
-        };
-    }
-
-    public setAmbientOcclusionTexture(imageUrl: string): void {
-        LoadResources.loadTexture(imageUrl).then(texture => {
-            this.ambientOcclusion = texture;
-        });
-    }
-
-    public setMetallicRoughnessTexture(imageUrl: string): void {
-        LoadResources.loadTexture(imageUrl).then(texture => {
-            this.metallicRoughnessTexture = texture;
-        });
-    }
-
-    public setEmissiveTexture(imageUrl: string): void {
-        LoadResources.loadTexture(imageUrl).then(texture => {
-            this.emissiveTexture = texture;
-        });
-    }
-
-    public setBaseColorTexture(imageUrl: string): void {
-        LoadResources.loadTexture(imageUrl).then(texture => {
-            this.baseColorTexture = texture;
-        });
-    }
-
-    public setNormalTexture(imageUrl: string): void {
-        LoadResources.loadTexture(imageUrl).then(texture => {
-            this.normalTexture = texture;
-        });
-    }
-
-    private applyTextures(): void {
-       
-        if(this.shader) {
-
-            if (this.baseColorTexture?.webGLTexture) {
-                this.flag |= TextureType.BASE_COLOR;
-                this.shader.setSample2d("u_baseColorTexture", this.baseColorTexture.webGLTexture, 0);
-            }
-
-            if (this.normalTexture?.webGLTexture) {
-                this.flag |= TextureType.NORMAL;
-                this.shader.setSample2d("u_normalTexture", this.normalTexture.webGLTexture, 1);
-            }
-            if (this.metallicRoughnessTexture?.webGLTexture) {
-                this.flag |= TextureType.METALLIC_ROUGHNESS;
-                this.shader.setSample2d("u_metallicRoughnessTexture", this.metallicRoughnessTexture.webGLTexture, 2);
-            }
-            if (this.emissiveTexture?.webGLTexture) {
-                this.flag |= TextureType.EMISSIVE;
-                this.shader.setSample2d("u_emissiveTexture", this.emissiveTexture.webGLTexture, 3);
-            }
-
-            // if(this.lutTexture?.webGLTexture) {
-            //     this.flag |= TextureType.LUT;
-            //     this.shader.setSample2d("u_lut", this.lutTexture.webGLTexture, 4);
-            // }
-
-            this.shader.setInt("u_textureFlags", this.flag);
-            this.flag = 0;
-        }
-    }
-
-    private applyLight(): void {
-        if (!this.shader) return;
-    
-        const lights = LightManager.getLights();
-        const maxLights = 10;
-        const lightCount = Math.min(lights.length, maxLights);
-    
-        for (let index = 0; index < lightCount; index++) {
-            const light = lights[index];
-    
-            this.shader.setVec3(`u_lights[${index}].color`, light.color.rgb);
-            this.shader.setFloat(`u_lights[${index}].intensity`, light.intensity);
-    
-            if (light.type === AmbientLight.STRING_NAME) {
-                this.shader.setInt(`u_lights[${index}].type`, 0);
-
-            } else if (light.type === DirecionalLight.TYPE) {
-                this.shader.setInt(`u_lights[${index}].type`, 1);
-                this.shader.setVec3(`u_lights[${index}].position`, light.transform.position.xyz);
-                this.shader.setVec3(`u_lights[${index}].direction`, light.transform.forward.xyz);
-               
-            }
-        }
-    
-        this.shader.setInt("u_lightCount", lightCount);
-    }
-
-    private applyMaterialProperties(): void {
-        const buffer = BufferManager.getUniformBuffer(this.id.value);
-        if(buffer) {
-            this.shader.setUniformBuffer(buffer, "MaterialUniform", 1);
-        }
-        this.shader.setVec3("u_emissiveFactor", this._emissive);
-    }
-    
     public apply(): void {
-
-        if(!this.shader) return;
+        if (!this.shader) return;
         this.shader.use();
         this.applyTextures();
         this.applyMaterialProperties();
     }
 
+    public setBaseColorTexture(url: string) {
+        this.loadTexture(url, (t) => this.baseColorTexture = t);
+    }
+
+    public setNormalTexture(url: string) {
+        this.loadTexture(url, (t) => this.normalTexture = t);
+    }
+
+    public setMetallicRoughnessTexture(url: string) {
+        this.loadTexture(url, (t) => this.metallicRoughnessTexture = t);
+    }
+
+    public setEmissiveTexture(url: string) {
+        this.loadTexture(url, (t) => this.emissiveTexture = t);
+    }
+
+    public setAmbientOcclusionTexture(url: string) {
+        this.loadTexture(url, (t) => this.ambientOcclusion = t);
+    }
+
+    // === Métodos Privados ===
+
+    private loadTexture(url: string, assign: (t: Texture) => void) {
+        LoadResources.loadTexture(url).then(assign);
+    }
+
+    private initializeShaderUniforms(): void {
+        if (!this.shader) return;
+
+        this.shader.setGlobalUniforms = () => {
+            this.shader!.use();
+
+            const camera = Camera.main;
+            this.shader!.setVec3("u_viewPosition", camera.transform.position);
+            this.shader!.setInt("u_renderPass", WorldOptions.renderPass);
+
+            this.applyLight();
+
+            const cameraBuffer = BufferManager.getUniformBuffer(camera.id.value);
+            BufferManager.updateCameraBuffer(camera);
+
+            if (cameraBuffer) {
+                this.shader!.setUniformBuffer(cameraBuffer, "CameraUniform", 0);
+            }
+        };
+    }
+
+    private applyTextures(): void {
+        if (!this.shader) return;
+
+        const { shader } = this;
+
+        if (this.baseColorTexture?.webGLTexture) {
+            this.flag |= TextureType.BASE_COLOR;
+            shader.setSample2d("u_baseColorTexture", this.baseColorTexture.webGLTexture, 0);
+        }
+
+        if (this.normalTexture?.webGLTexture) {
+            this.flag |= TextureType.NORMAL;
+            shader.setSample2d("u_normalTexture", this.normalTexture.webGLTexture, 1);
+        }
+
+        if (this.metallicRoughnessTexture?.webGLTexture) {
+            this.flag |= TextureType.METALLIC_ROUGHNESS;
+            shader.setSample2d("u_metallicRoughnessTexture", this.metallicRoughnessTexture.webGLTexture, 2);
+        }
+
+        if (this.emissiveTexture?.webGLTexture) {
+            this.flag |= TextureType.EMISSIVE;
+            shader.setSample2d("u_emissiveTexture", this.emissiveTexture.webGLTexture, 3);
+        }
+
+        shader.setInt("u_textureFlags", this.flag);
+        this.flag = 0;
+    }
+
+    private applyMaterialProperties(): void {
+        const buffer = BufferManager.getUniformBuffer(this.id.value);
+        if (buffer) {
+            this.shader!.setUniformBuffer(buffer, "MaterialUniform", 1);
+        }
+
+        this.shader!.setVec3("u_emissiveFactor", this.emissive);
+    }
+
+    private applyLight(): void {
+        if (!this.shader) return;
+
+        const lights = LightManager.getLights();
+        const maxLights = 10;
+        const count = Math.min(lights.length, maxLights);
+
+        for (let i = 0; i < count; i++) {
+            const light = lights[i];
+
+            this.shader.setVec3(`u_lights[${i}].color`, light.color.rgb);
+            this.shader.setFloat(`u_lights[${i}].intensity`, light.intensity);
+
+            if (light.type === AmbientLight.STRING_NAME) {
+                this.shader.setInt(`u_lights[${i}].type`, 0);
+            } else if (light.type === DirecionalLight.TYPE) {
+                this.shader.setInt(`u_lights[${i}].type`, 1);
+                this.shader.setVec3(`u_lights[${i}].position`, light.transform.position.xyz);
+                this.shader.setVec3(`u_lights[${i}].direction`, light.transform.forward.xyz);
+            }
+        }
+
+        this.shader.setInt("u_lightCount", count);
+    }
 }
