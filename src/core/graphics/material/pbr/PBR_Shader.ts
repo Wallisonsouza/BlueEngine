@@ -2,10 +2,8 @@ import WorldOptions from "../../../../../engine/WorldOptions";
 import Camera from "../../../components/Camera";
 import AmbientLight from "../../../components/light/AmbientLight";
 import DirecionalLight from "../../../components/light/DirecionalLight";
-import Light from "../../../components/light/Light";
 import LightManager from "../../../components/light/LightManager";
 import BufferHelper from "../../../managers/BufferHelper";
-import LoadResources from "../../../managers/LoadResources";
 import Shader from "../../shaders/Shader";
 
 
@@ -39,7 +37,7 @@ export class PBRShader extends Shader {
             this.setVec3(`u_lights[${index}].color`, light.color.rgb);
             this.setFloat(`u_lights[${index}].intensity`, light.intensity);
     
-            if (light.type === AmbientLight.TYPE) {
+            if (light.type === AmbientLight.STRING_NAME) {
                 this.setInt(`u_lights[${index}].type`, 0);
 
             } else if (light.type === DirecionalLight.TYPE) {

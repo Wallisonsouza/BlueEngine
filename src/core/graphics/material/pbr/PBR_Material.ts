@@ -200,7 +200,7 @@ export default class PBRMaterial extends Material {
             this.shader.setVec3(`u_lights[${index}].color`, light.color.rgb);
             this.shader.setFloat(`u_lights[${index}].intensity`, light.intensity);
     
-            if (light.type === AmbientLight.TYPE) {
+            if (light.type === AmbientLight.STRING_NAME) {
                 this.shader.setInt(`u_lights[${index}].type`, 0);
 
             } else if (light.type === DirecionalLight.TYPE) {

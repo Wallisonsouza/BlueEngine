@@ -1,5 +1,5 @@
 import Vector3 from "../../math/Vector3";
-import Transform from "../Transform";
+import Transform from "../../transform/Transform";
 
 export default class Bounds {
     private _min: Vector3 | null = null;

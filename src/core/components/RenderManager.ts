@@ -3,44 +3,34 @@ import Renderer from "./Renderer";
 import Material from "../graphics/material/Material";
 import LifeCycleEvents from "./CallbackManager";
 import GameObject from "./GameObject";
+import RendererManager from "../managers/RendererManager";
 
-export default class RendererManager {
+export default class RendMang {
 
  
     private static opaqueObjects: Map<Material, Renderer[]> = new Map();
     private static transparentObjects: Map<Material, Renderer[]> = new Map();
 
-    // private static renderers: Renderer[] = [];
-    // // essa merda pode dar erro corrija essa bosta depois 
-    // public static addRenderer(render: Renderer) {
-    //     if(!RendererManager.renderers.includes(render)) {
-    //         RendererManager.renderers.push(render);
-    //     }
-    // }
 
-    public static collectRenderers(gameObjects: GameObject[]): void {
+    public static collectRenderers(): void {
         
         this.opaqueObjects.clear();
         this.transparentObjects.clear();
 
-        for (const gameObject of gameObjects) {
+        const renderers = RendererManager.getAll();
 
-            const renderers = gameObject.getComponentByGroup<Renderer>("Renderer");
-            if(!renderers) continue;
+        for(const renderer of renderers) {
+            if(!renderer) {continue}
+            if (!renderer.material) continue;
 
-            for(const renderer of renderers) {
-                if(!renderer) {continue}
-                if (!renderer.material) continue;
-    
-                const targetMap = renderer.material.isTransparent
-                    ? this.transparentObjects
-                    : this.opaqueObjects;
-    
-                if (!targetMap.has(renderer.material)) {
-                    targetMap.set(renderer.material, []);
-                }
-                targetMap.get(renderer.material)?.push(renderer);
+            const targetMap = renderer.material.isTransparent
+                ? this.transparentObjects
+                : this.opaqueObjects;
+
+            if (!targetMap.has(renderer.material)) {
+                targetMap.set(renderer.material, []);
             }
+            targetMap.get(renderer.material)?.push(renderer);
         }
            
     }
@@ -89,9 +79,3 @@ export default class RendererManager {
         gl.disable(gl.BLEND);
     }
 }
-
-LifeCycleEvents.on("render", 
-    function(gl: WebGL2RenderingContext, camera: Camera) {
-        RendererManager.renderObjects(gl, camera);
-    }
-);

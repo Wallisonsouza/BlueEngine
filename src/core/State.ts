@@ -7,11 +7,11 @@ export default class State<T> {
         this.onChange = onChange;
     }
 
-    public get value(): T {
+    public get(): T {
         return this._value;
     }
 
-    public set value(newValue: T) {
+    public set(newValue: T) {
         if (newValue !== this._value) {
             const oldValue = this._value;
             this._value = newValue;

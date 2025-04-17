@@ -348,6 +348,5 @@ export default class Vector3 {
     toFloat32Array(): Float32Array {
         return new Float32Array([this.x, this.y, this.z]);
     }
-
     
 }

@@ -1,7 +1,6 @@
 import Camera from "../components/Camera";
 import Display from "../components/Display";
 import { BufferTarget, BufferUsage } from "../enum/Buffer";
-import PBRMaterial from "../graphics/material/pbr/PBR_Material";
 import Mesh from "../graphics/mesh/Mesh";
 import Mathf from "../math/Mathf";
 import Vector2 from "../math/Vector2";

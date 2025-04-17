@@ -2,7 +2,7 @@ import { Main } from "../../game/logic/main";
 import LifeCycleEvents from "./components/CallbackManager";
 import Camera from "./components/Camera";
 import Display from "./components/Display";
-import RendererManager from "./components/RenderManager";
+import RendMang from "./components/RenderManager";
 import { loadDependencies } from "./EngineDependences";
 import Input from "./input/Input";
 import SceneManager from "./managers/SceneManager";
@@ -27,6 +27,19 @@ export default class Engine {
 
     public init() {
         Main();
+
+        LifeCycleEvents.on("update", () => {
+            RendMang.collectRenderers();
+        });
+
+        
+        LifeCycleEvents.on("render", () => {
+
+            const gl = Engine.gl;
+            const camera = Camera.main;
+            RendMang.renderObjects(gl, camera);
+           
+        });
     }
 
     
@@ -56,11 +69,8 @@ export default class Engine {
         const [r, g, b, a] = camera.clearColor.rgba;
         gl.clearColor(r, g, b, a);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        
-
-        const gameObjects = SceneManager.getAllGameObjects();
-        RendererManager.collectRenderers(gameObjects);
-        LifeCycleEvents.emit("render", gl, camera);
+       
+        LifeCycleEvents.emit("render");
         LifeCycleEvents.emit("update");
         Input.clearInputs();
     }
@@ -68,6 +78,7 @@ export default class Engine {
 
     public async load() {
         await loadDependencies();
+
     }
 
     public start() {

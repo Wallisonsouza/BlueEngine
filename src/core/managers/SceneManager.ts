@@ -1,8 +1,10 @@
 import GameObject from "../components/GameObject";
 import Light from "../components/light/Light";
 import LightManager from "../components/light/LightManager";
+import Renderer from "../components/Renderer";
 import Scene from "../components/Scene";
 import { NullReferenceException } from "../Error";
+import RendererManager from "./RendererManager";
 
 export default class SceneManager {
     private static _scenes: Scene[] = [];
@@ -83,9 +85,18 @@ export default class SceneManager {
                 LightManager.addLight(l);
             })
         }
-      
-        return this._currentScene?.addGameObject(newGameObject);
+
+        const renderers = newGameObject.getComponentByGroup<Renderer>("Renderer");
+        if(renderers) {
+            for(const renderer of renderers) {
+                RendererManager.addRenderer(renderer);
+            }
+        }
+       
+       this._currentScene?.addGameObject(newGameObject);
     }
+
+
     public static addGameObjects(gameObjects: GameObject[]) {
         for(const gameObject of gameObjects) {
             this.addGameObject(gameObject);

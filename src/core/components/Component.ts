@@ -1,4 +1,4 @@
-import Transform from "./Transform";
+import Transform from "../transform/Transform";
 import GameObject from "./GameObject";
 import { NullReferenceException } from "../Error";
 import LifeCycle from "./LifeCycle";

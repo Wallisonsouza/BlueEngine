@@ -50,19 +50,6 @@ export async function loadDependencies() {
             "lut"
         )
     ]);
-
-    // const texturePromises = [
-    //     LoadResources.loadImage("assets/cubeMap/default/right.bmp"),  // Positive X
-    //     LoadResources.loadImage("assets/cubeMap/default/left.bmp"),   // Negative X
-    //     LoadResources.loadImage("assets/cubeMap/default/top.bmp"),    // Positive Y
-    //     LoadResources.loadImage("assets/cubeMap/default/bottom.bmp"), // Negative Y
-    //     LoadResources.loadImage("assets/cubeMap/default/front.bmp"),  // Positive Z
-    //     LoadResources.loadImage("assets/cubeMap/default/back.bmp")    // Negative Z
-    // ];
-
-    // const [right, left, top, bottom, front, back] = await Promise.all(texturePromises);
-    // const envMap = TextureBuilder.createCubemapTexture(gl, back, front, left, right, top, bottom);
-    // WorldOptions.environmentTexture = envMap;
     
     //#region  GEOMETRIES
         const plane = PlaneGeometry.create();
@@ -87,3 +74,16 @@ export async function loadDependencies() {
     //#endregion
   
 }
+
+// const texturePromises = [
+//     LoadResources.loadImage("assets/cubeMap/default/right.bmp"),  // Positive X
+//     LoadResources.loadImage("assets/cubeMap/default/left.bmp"),   // Negative X
+//     LoadResources.loadImage("assets/cubeMap/default/top.bmp"),    // Positive Y
+//     LoadResources.loadImage("assets/cubeMap/default/bottom.bmp"), // Negative Y
+//     LoadResources.loadImage("assets/cubeMap/default/front.bmp"),  // Positive Z
+//     LoadResources.loadImage("assets/cubeMap/default/back.bmp")    // Negative Z
+// ];
+
+// const [right, left, top, bottom, front, back] = await Promise.all(texturePromises);
+// const envMap = TextureBuilder.createCubemapTexture(gl, back, front, left, right, top, bottom);
+// WorldOptions.environmentTexture = envMap;

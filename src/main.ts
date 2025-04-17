@@ -1,7 +1,7 @@
 import Engine from "./core/engine";
 import Events from "./Events";
 import Display from "./core/components/Display";
-import SceneManager from "./core/managers/SceneManager";
+
 //#region CONFIG
     const canvas = document.getElementById("canvas") as HTMLCanvasElement;
     if (!canvas) {
@@ -41,7 +41,6 @@ engine.init();
 engine.start();
 
 
-console.log(SceneManager.getCurrentScene())
 // class Node<T> {
 
 //     public value: T;

@@ -1,6 +1,6 @@
 import Ray from "./Ray";
 import Mesh from "../graphics/mesh/Mesh";
-import Transform from "../components/Transform";
+import Transform from "../transform/Transform";
 import Quaternion from "../math/Quaternion";
 import Vector3 from "../math/Vector3";
 

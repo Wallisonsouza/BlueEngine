@@ -90,8 +90,8 @@ export class ObjectManager<T> {
         return this.objectsByType.get(type) ?? [];
     }
 
-    public getObjectsByGroup(group: string): T[] {
-        return this.objectsByGroup.get(group) ?? []; // Método para buscar por grupo
+    public getObjectsByGroup(group: string): T[] | null{
+        return this.objectsByGroup.get(group) ?? null; 
     }
 
     public removeObject(id: number): boolean {

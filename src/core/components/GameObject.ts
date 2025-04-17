@@ -1,4 +1,4 @@
-import Transform from "./Transform";
+import Transform from "../transform/Transform";
 import Component from "./Component";
 import Entity from "./Entity";
 import { ComponentAlreadyExistsException } from "../Error";
@@ -68,8 +68,8 @@ export default class GameObject extends Entity {
     public getComponentByType<T extends Component>(type: string) {
         return this._components.getObjectsByType(type)[0] as T;
     }
-    public getComponentByGroup<T extends Component>(type: string) {
-        return this._components.getObjectsByGroup(type) as T[];
+    public getComponentByGroup<T extends Component>(type: string): T[] | null {
+        return this._components.getObjectsByGroup(type) as T[] | null;
     }
 
     destroy(): void {

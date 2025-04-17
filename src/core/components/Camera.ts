@@ -19,13 +19,6 @@ export default class Camera extends Component {
     private _depth: boolean;
     private _clearColor: Color;
 
-    private cachedProjectionMatrix: Matrix4x4 | null = null;
-
-    public projectionChanged: boolean = false; 
-    private clearProjectionCache() {
-        this.cachedProjectionMatrix = null;
-        this.projectionChanged = true;
-    }
 
     public get viewChanged() {
         return this.transform.modelChanged;
@@ -57,6 +50,19 @@ export default class Camera extends Component {
     }
     //#endregion
 
+
+
+
+    private cachedProjectionMatrix: Matrix4x4 | null = null;
+
+    public projectionChanged: boolean = false; 
+    private clearProjectionCache() {
+        this.cachedProjectionMatrix = null;
+        this.projectionChanged = true;
+    }
+
+
+    
     //#region Setters
     public set fieldOfView(fov: number) {
         if (this._fieldOfView !== fov) {
@@ -88,6 +94,27 @@ export default class Camera extends Component {
     //#endregion
 
     //#endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public set depth(depth: boolean) {
         this._depth = depth;
