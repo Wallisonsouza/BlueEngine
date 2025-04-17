@@ -1,4 +1,4 @@
-import BufferHelper, {  } from "./managers/BufferHelper";
+import BufferManager, {  } from "./managers/BufferManager";
 import MeshManager from "./managers/MeshManager";
 import ShaderManager from "./managers/ShaderManager";
 import SquareGeometry from "./geometries/SquareGeometry";
@@ -55,22 +55,22 @@ export async function loadDependencies() {
         const plane = PlaneGeometry.create();
         plane.name = "plane";
         MeshManager.addMesh(plane);
-        BufferHelper.createMeshBuffer(plane);
+        BufferManager.createMeshBuffer(plane);
 
         const square = SquareGeometry.create();
         square.name = "square";
         MeshManager.addMesh(square);
-        BufferHelper.createMeshBuffer(square);
+        BufferManager.createMeshBuffer(square);
 
         const cube = CubeGeometry.create();
         cube.name = "cube";
         MeshManager.addMesh(cube);
-        BufferHelper.createMeshBuffer(cube);
+        BufferManager.createMeshBuffer(cube);
 
         const sphere = SphereGeometry.create();
         sphere.name = "sphere";
         MeshManager.addMesh(sphere);
-        BufferHelper.createMeshBuffer(sphere);
+        BufferManager.createMeshBuffer(sphere);
     //#endregion
   
 }

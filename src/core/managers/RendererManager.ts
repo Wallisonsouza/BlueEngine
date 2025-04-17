@@ -1,7 +1,10 @@
 import Renderer from "../components/Renderer";
 
 export default class RendererManager {
+
     private static renderers: Map<number, Renderer> = new Map();
+    
+    private static opaqueRenderers: Map<number, Renderer> = new Map();
 
     public static addRenderer(renderer: Renderer): boolean {
         if (this.renderers.has(renderer.id.value)) {

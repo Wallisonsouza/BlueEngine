@@ -10,7 +10,7 @@ import { TextureType } from "../../../enum/TextureType";
 import Display from "../../../components/Display";
 import DirecionalLight from "../../../components/light/DirecionalLight";
 import AmbientLight from "../../../components/light/AmbientLight";
-import BufferHelper from "../../../managers/BufferHelper";
+import BufferManager from "../../../managers/BufferManager";
 import { NullReferenceException } from "../../../Error";
 import LightManager from "../../../components/light/LightManager";
 
@@ -107,8 +107,8 @@ export default class PBRMaterial extends Material {
             this.shader.setInt("u_renderPass", WorldOptions.renderPass);
 
 
-            const buffer = BufferHelper.getUniformBuffer(camera.id.value);
-            BufferHelper.updateCameraBuffer(camera);
+            const buffer = BufferManager.getUniformBuffer(camera.id.value);
+            BufferManager.updateCameraBuffer(camera);
             if(buffer) {
                 this.shader.setUniformBuffer(buffer, "CameraUniform", 0);
             }
@@ -215,7 +215,7 @@ export default class PBRMaterial extends Material {
     }
 
     private applyMaterialProperties(): void {
-        const buffer = BufferHelper.getUniformBuffer(this.id.value);
+        const buffer = BufferManager.getUniformBuffer(this.id.value);
         if(buffer) {
             this.shader.setUniformBuffer(buffer, "MaterialUniform", 1);
         }

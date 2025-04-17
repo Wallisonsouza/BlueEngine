@@ -1,16 +1,12 @@
 import Camera from "./Camera";
 import Renderer from "./Renderer";
 import Material from "../graphics/material/Material";
-import LifeCycleEvents from "./CallbackManager";
-import GameObject from "./GameObject";
 import RendererManager from "../managers/RendererManager";
 
 export default class RendMang {
 
- 
     private static opaqueObjects: Map<Material, Renderer[]> = new Map();
     private static transparentObjects: Map<Material, Renderer[]> = new Map();
-
 
     public static collectRenderers(): void {
         

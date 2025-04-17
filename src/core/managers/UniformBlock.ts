@@ -1,5 +1,5 @@
 import { BufferUsage, BufferTarget } from "../enum/Buffer";
-import BufferHelper, { UniformBufferConfig, UniformBufferObject } from "./BufferHelper";
+import BufferManager, { UniformBufferConfig, UniformBufferObject } from "./BufferManager";
 
 export default class UniformBlock {
 
@@ -53,7 +53,7 @@ export default class UniformBlock {
             target: BufferTarget.UNIFORM_BUFFER,
         };
 
-        BufferHelper.createUniformBuffer(identifier, config);
+        BufferManager.createUniformBuffer(identifier, config);
 
         for (const [key, property] of this.properties) {
             if (this.id && property) {
@@ -68,7 +68,7 @@ export default class UniformBlock {
                     ]
                 };
 
-                BufferHelper.updateUniformBuffer(object);
+                BufferManager.updateUniformBuffer(object);
             }
         }
     }
@@ -88,7 +88,7 @@ export default class UniformBlock {
                 ]
             };
 
-            BufferHelper.updateUniformBuffer(object);
+            BufferManager.updateUniformBuffer(object);
         }
     }
 

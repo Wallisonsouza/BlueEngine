@@ -5,7 +5,7 @@ import { ComponentAlreadyExistsException } from "../Error";
 import SceneManager from "../managers/SceneManager";
 import { ObjectManager } from "../managers/ObjectManager";
 import Camera from "./Camera";
-import BufferHelper from "../managers/BufferHelper";
+import BufferManager from "../managers/BufferManager";
 
 export default class GameObject extends Entity {
     
@@ -37,7 +37,7 @@ export default class GameObject extends Entity {
         }
 
         if(componentInstance instanceof Camera)  {
-            BufferHelper.createCameraBuffer(componentInstance);
+            BufferManager.createCameraBuffer(componentInstance);
         }
 
 

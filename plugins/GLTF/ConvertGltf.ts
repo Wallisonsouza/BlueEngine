@@ -1,4 +1,4 @@
-import BufferHelper, { BufferData, ObjectBuffer } from "../../src/core/managers/BufferHelper";
+import BufferManager, { BufferData, ObjectBuffer } from "../../src/core/managers/BufferManager";
 import GameObject from "../../src/core/components/GameObject";
 import MeshFilter from "../../src/core/components/MeshFilter";
 import { AlphaMode } from "../../src/core/enum/AlphaMode";
@@ -101,7 +101,7 @@ export default class Conversors {
         );
         mesh.name = parsedMesh.name;
 
-        BufferHelper.createMeshBuffer(mesh);
+        BufferManager.createMeshBuffer(mesh);
         return mesh;
     }
 

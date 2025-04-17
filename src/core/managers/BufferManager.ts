@@ -43,7 +43,7 @@ export interface UniformBufferObject {
 
 
 
-export default class BufferHelper {
+export default class BufferManager {
 
     private static createWebGLBuffer(context: WebGL2RenderingContext, target: BufferTarget, data: Data, usage: BufferUsage): WebGLBuffer {
         const buffer = context.createBuffer();
@@ -192,12 +192,12 @@ export default class BufferHelper {
             };
         }
     
-        BufferHelper.createObjectBuffer({
+        BufferManager.createObjectBuffer({
             id: mesh.id.value, 
             buffersData: [vertexBuffer, normalBuffer, uvBuffer, tangentBuffer, indexBuffer]
         });
         
-        BufferHelper.createObjectBuffer({
+        BufferManager.createObjectBuffer({
             id: mesh.id.value + 10000, 
             buffersData: [vertexBuffer, normalBuffer, uvBuffer, tangentBuffer, wireframeBuffer]
         });
@@ -211,7 +211,7 @@ export default class BufferHelper {
         };
     
         this.createUniformBuffer(camera.id.value, blockConfig);
-        BufferHelper.updateCameraBuffer(camera);
+        BufferManager.updateCameraBuffer(camera);
     }
     
     private static bufferCache: Map<number, WebGLVertexArrayObject | null> = new Map();

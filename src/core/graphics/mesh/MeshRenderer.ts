@@ -1,5 +1,5 @@
 import WorldOptions from "../../../../engine/WorldOptions";
-import BufferHelper from "../../managers/BufferHelper";
+import BufferManager from "../../managers/BufferManager";
 import Camera from "../../components/Camera";
 import MeshFilter from "../../components/MeshFilter";
 import Renderer from "../../components/Renderer";
@@ -43,7 +43,7 @@ export default class MeshRenderer extends Renderer {
        
         let meshBuffer;
        
-        meshBuffer =  BufferHelper.getBufferArrayObject(mesh.id.value);
+        meshBuffer =  BufferManager.getBufferArrayObject(mesh.id.value);
 
         if(!meshBuffer) {
             console.warn("Mesh ou propriedades essenciais não encontradas. Verifique se a malha e o material estão definidos.");
@@ -51,7 +51,7 @@ export default class MeshRenderer extends Renderer {
         }
 
         if(WorldOptions.renderMode === RenderMode.LINES){
-            meshBuffer = BufferHelper.getBufferArrayObject(mesh.id.value + 10000);
+            meshBuffer = BufferManager.getBufferArrayObject(mesh.id.value + 10000);
         }
      
         const modelMatrix = this.transform.modelMatrix;

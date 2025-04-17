@@ -81,9 +81,9 @@ export default class SceneManager {
 
         const lights = newGameObject.getComponentByGroup<Light>("Light");
         if(lights) {
-            lights.forEach( l => {
-                LightManager.addLight(l);
-            })
+            for(const light of lights) {
+                LightManager.addLight(light);
+            }
         }
 
         const renderers = newGameObject.getComponentByGroup<Renderer>("Renderer");

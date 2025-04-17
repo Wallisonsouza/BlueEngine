@@ -3,7 +3,7 @@ import Camera from "../../../components/Camera";
 import AmbientLight from "../../../components/light/AmbientLight";
 import DirecionalLight from "../../../components/light/DirecionalLight";
 import LightManager from "../../../components/light/LightManager";
-import BufferHelper from "../../../managers/BufferHelper";
+import BufferManager from "../../../managers/BufferManager";
 import Shader from "../../shaders/Shader";
 
 
@@ -17,8 +17,8 @@ export class PBRShader extends Shader {
         this.setInt("u_renderPass", WorldOptions.renderPass);
 
 
-        const buffer = BufferHelper.getUniformBuffer(camera.id.value);
-        BufferHelper.updateCameraBuffer(camera);
+        const buffer = BufferManager.getUniformBuffer(camera.id.value);
+        BufferManager.updateCameraBuffer(camera);
         if(buffer) {
             this.setUniformBuffer(buffer, "CameraUniform", 0);
         }
