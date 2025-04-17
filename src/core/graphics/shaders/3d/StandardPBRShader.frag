@@ -526,7 +526,7 @@ void main() {
         vec3 linearColor = material.brdf;  // Manter tudo linear
         vec3 tonemappedColor = reinhardTonemap(linearColor);         // Tonemapping no espaço linear
         vec3 srgbColor = linear_rgb_to_srgb(tonemappedColor); // Converter para sRGB no final
-        FragColor = vec4(vec3(0.5), material.alpha);
+        FragColor = vec4(vec3(srgbColor), material.alpha);
 
 
             break;
