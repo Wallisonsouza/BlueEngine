@@ -153,7 +153,7 @@ export default class Conversors {
                 for (const childIndex of node.childrenIndex) {
                     const child = gameObjects[childIndex];
                     if (child) {
-                        child.transform.setParent(gameObject.transform);
+                        child.transform.hierarchy.setParent(gameObject.transform);
                     }
                 }
             }

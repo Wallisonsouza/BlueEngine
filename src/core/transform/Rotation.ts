@@ -5,7 +5,7 @@ import Vector3 from "../math/Vector3";
 
 export default class Rotation {
 
-    public static createRotationByAxys(rotation: Quaternion, axis: Vector3, angle: number, space: Space = Space.SELF): void {
+    public static createRotationByAxis(rotation: Quaternion, axis: Vector3, angle: number, space: Space = Space.SELF): void {
        
         const normalizedAxis = axis.normalize(); 
         const radians = Mathf.degToRad(angle);
@@ -28,7 +28,7 @@ export default class Rotation {
         }
     }
 
-    public static createRotationAround(position: Vector3, rotation: Quaternion, point: Vector3, axis: Vector3, angle: number): void {
+    public static rotateAroundPoint(position: Vector3, rotation: Quaternion, point: Vector3, axis: Vector3, angle: number): void {
           
         const normalizedAxis = axis.normalize();
         const radians = Mathf.degToRad(angle);

@@ -1,6 +1,31 @@
 import Identifier from "./Identifier";
 
-export default class Entity {
+type ChangeCallback = () => void;
+
+
+class ObservableObject {
+    private values = new Map<string, any>();
+    private callbacks = new Map<string, ChangeCallback>();
+
+    protected defineObservable<T>(key: string, initial: T, onChange: ChangeCallback) {
+        this.values.set(key, initial);
+        this.callbacks.set(key, onChange);
+
+        Object.defineProperty(this, key, {
+            get: () => this.values.get(key),
+            set: (value: T) => {
+                if (this.values.get(key) !== value) {
+                    this.values.set(key, value);
+                    onChange();
+                }
+            },
+            enumerable: true,
+            configurable: true,
+        });
+    }
+}
+
+export default class Entity extends ObservableObject{
     private readonly _id: Identifier;
 
     public get id(): Identifier {
@@ -8,6 +33,7 @@ export default class Entity {
     }
 
     constructor() {
+        super();
         this._id = Identifier.create();
     }
 

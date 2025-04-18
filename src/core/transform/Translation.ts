@@ -3,7 +3,7 @@ import Quaternion from "../math/Quaternion";
 import Vector3 from "../math/Vector3";
 
 export default class Translation {
-    public static createTranslationByDirection(position: Vector3, rotation: Quaternion, newTranslation: Vector3, space: Space = Space.SELF): void {
+    public static createTranslationByDirection(position: Vector3, rotation: Quaternion, newTranslation: Vector3, space: Space = Space.SELF): Vector3 {
         switch (space) {
             case Space.SELF:
                 const localTranslation = rotation.transformVector3(newTranslation);
@@ -16,9 +16,9 @@ export default class Translation {
             
             default:
                 console.error('Espaço de translação inválido. Use Space.SELF ou Space.WORLD.');
-                return;
+                return position;
         }
         
-        
+        return position;
     }
 }

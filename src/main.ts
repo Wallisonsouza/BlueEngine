@@ -1,6 +1,7 @@
 import Engine from "./core/engine";
 import Events from "./Events";
 import Display from "./core/components/Display";
+import Camera from "./core/components/Camera";
 
 //#region CONFIG
     const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -39,3 +40,5 @@ engine.init();
 
 // Inicia o ciclo contínuo de renderização, no qual a cena será atualizada e renderizada a cada quadro (frame) para proporcionar a experiência visual interativa.
 engine.start();
+
+

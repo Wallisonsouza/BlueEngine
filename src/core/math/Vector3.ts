@@ -3,9 +3,50 @@ import Mathf from "./Mathf";
 import Vector4 from "./Vector4";
 
 export default class Vector3 {
-    x: number;
-    y: number;
-    z: number;
+    
+    private xData: number = 0;
+    private yData: number = 0;
+    private zData: number = 0;
+    
+    private onChangeCallback?: () => void;
+    
+    public onChange(callback: () => void): void {
+        this.onChangeCallback = callback;
+    }
+    
+    public get x(): number {
+        return this.xData;
+    }
+    
+    public set x(value: number) {
+        if (this.xData !== value) {
+            this.xData = value;
+            this.onChangeCallback?.();
+        }
+    }
+    
+    public get y(): number {
+        return this.yData;
+    }
+    
+    public set y(value: number) {
+        if (this.yData !== value) {
+            this.yData = value;
+            this.onChangeCallback?.();
+        }
+    }
+    
+    public get z(): number {
+        return this.zData;
+    }
+    
+    public set z(value: number) {
+        if (this.zData !== value) {
+            this.zData = value;
+            this.onChangeCallback?.();
+        }
+    }
+    
 
     public toVec4(){
         return new Vector4(this.x, this.y, this.z, 1);
@@ -61,9 +102,9 @@ export default class Vector3 {
 
 
     constructor(x: number = 0, y: number = 0, z: number = 0) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        this.xData = x;
+        this.yData = y;
+        this.zData = z;
     }
 
     public static abs(v: Vector3) {
@@ -348,5 +389,6 @@ export default class Vector3 {
     toFloat32Array(): Float32Array {
         return new Float32Array([this.x, this.y, this.z]);
     }
+
     
 }

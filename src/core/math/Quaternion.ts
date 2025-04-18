@@ -4,21 +4,69 @@ import Vector3 from "./Vector3";
 
 
 export default class Quaternion {
-    public x: number;
-    public y: number;
-    public z: number;
-    public w: number;
-
-    public static readonly IDENTITY = new Quaternion(0, 0, 0, 1);
+    private xData: number;
+    private yData: number;
+    private zData: number;
+    private wData: number;
+    
+    private onChangeCallback?: () => void;
 
     constructor(x: number = 0, y: number = 0, z: number = 0, w: number = 1) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.w = w;
+        this.xData = x;
+        this.yData = y;
+        this.zData = z;
+        this.wData = w;
     }
 
+    public onChange(callback: () => void): void {
+        this.onChangeCallback = callback;
+    }
 
+    public get x(): number {
+        return this.xData;
+    }
+
+    public set x(value: number) {
+        if (this.xData !== value) {
+            this.xData = value;
+            this.onChangeCallback?.();
+        }
+    }
+
+    public get y(): number {
+        return this.yData;
+    }
+
+    public set y(value: number) {
+        if (this.yData !== value) {
+            this.yData = value;
+            this.onChangeCallback?.();
+        }
+    }
+
+    public get z(): number {
+        return this.zData;
+    }
+
+    public set z(value: number) {
+        if (this.zData !== value) {
+            this.zData = value;
+            this.onChangeCallback?.();
+        }
+    }
+
+    public get w(): number {
+        return this.wData;
+    }
+
+    public set w(value: number) {
+        if (this.wData !== value) {
+            this.wData = value;
+            this.onChangeCallback?.();
+        }
+    }
+
+    public static readonly IDENTITY = new Quaternion(0, 0, 0, 1);
     public getRadians(): Vector3 {
         // Calculando a rotação sobre o eixo Z (roll), Y (pitch) e X (yaw)
         const sinr_cosp = 2 * (this.w * this.x + this.y * this.z);

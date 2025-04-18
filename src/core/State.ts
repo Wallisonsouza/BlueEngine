@@ -13,10 +13,12 @@ export default class State<T> {
         this.comparator = comparator;
     }
 
+    // Retorna o valor atual
     public get(): T {
         return this._value;
     }
 
+    // Método para garantir que o valor foi alterado
     public set(newValue: T) {
         if (!this.comparator(newValue, this._value)) {
             const oldValue = this._value;
@@ -25,14 +27,23 @@ export default class State<T> {
         }
     }
 
+    // Força a alteração do valor, mesmo sem mudança
     public forceSet(newValue: T) {
         const oldValue = this._value;
         this._value = newValue;
         this.onChange?.(newValue, oldValue);
     }
 
+    // Atualiza o callback de mudança
     public setOnChange(callback: (newValue: T, oldValue: T) => void) {
+        if (callback && typeof callback !== 'function') {
+            throw new Error('onChange must be a function');
+        }
         this.onChange = callback;
     }
-    
+
+    // Método adicional para obter o estado
+    public getState(): T {
+        return this._value;
+    }
 }

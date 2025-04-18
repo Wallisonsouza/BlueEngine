@@ -7,123 +7,87 @@ import Vector3 from "../math/Vector3";
 import Vector4 from "../math/Vector4";
 import Display from "./Display";
 import SceneManager from "../managers/SceneManager";
+import GameObject from "./GameObject";
 
 export default class Camera extends Component {
 
     public static readonly TYPE = "Camera";
     // Propriedades privadas
-    private _fieldOfView: number;
-    private _aspectRatio: number;
-    private _nearPlane: number;
-    private _farPlane: number;
-    private _depth: boolean;
-    private _clearColor: Color;
+    private fieldOfViewData: number;
+    private aspectRatioData: number;
+    private nearPlaneData: number;
+    private farPlaneData: number;
+    private projectionMatrixData: Matrix4x4;
+    private viewMatrixData: Matrix4x4;
 
-
-    public get viewChanged() {
-        return this.transform.modelChanged;
-    }
+    public depth: boolean;
+    public clearColor: Color;
 
     //#region Getters
     public get fieldOfView(): number {
-        return this._fieldOfView;
+        return this.fieldOfViewData;
     }
 
     public get aspectRatio(): number {
-        return this._aspectRatio;
+        return this.aspectRatioData;
     }
 
     public get nearPlane(): number {
-        return this._nearPlane;
+        return this.nearPlaneData;
     }
 
     public get farPlane(): number {
-        return this._farPlane;
-    }
-
-    public get depth(): boolean {
-        return this._depth;
-    }
-
-    public get clearColor(): Color {
-        return this._clearColor;
+        return this.farPlaneData;
     }
     //#endregion
 
-
-
-
-    private cachedProjectionMatrix: Matrix4x4 | null = null;
-
-    public projectionChanged: boolean = false; 
     private clearProjectionCache() {
-        this.cachedProjectionMatrix = null;
-        this.projectionChanged = true;
+        this.projectionMatrixData = Matrix4x4.createPerspective(
+            this.fieldOfViewData,
+            this.aspectRatioData,
+            this.nearPlaneData,
+            this.farPlaneData
+        );
     }
 
+
+    public setGameObject(gameObject: GameObject): void {
+        super.setGameObject(gameObject);
+        this.transform.onModelMatrixUpdate(() => {
+            this.viewMatrixData = this.transform.modelMatrix.inverse();
+        })
+    }
 
     
     //#region Setters
     public set fieldOfView(fov: number) {
-        if (this._fieldOfView !== fov) {
-            this._fieldOfView = fov;
+        if (this.fieldOfViewData !== fov) {
+            this.fieldOfViewData = fov;
             this.clearProjectionCache();
         }
     }
 
     public set aspectRatio(aspectRatio: number) {
-        if (this._aspectRatio !== aspectRatio) {
-            this._aspectRatio = aspectRatio;
+        if (this.aspectRatioData !== aspectRatio) {
+            this.aspectRatioData = aspectRatio;
             this.clearProjectionCache();
         }
     }
 
     public set nearPlane(nearPlane: number) {
-        if (this._nearPlane !== nearPlane) {
-            this._nearPlane = nearPlane;
+        if (this.nearPlaneData !== nearPlane) {
+            this.nearPlaneData = nearPlane;
             this.clearProjectionCache();
         }
     }
 
     public set farPlane(farPlane: number) {
-        if (this._farPlane !== farPlane) {
-            this._farPlane = farPlane;
+        if (this.farPlaneData !== farPlane) {
+            this.farPlaneData = farPlane;
             this.clearProjectionCache();
         }
     }
-    //#endregion
-
-    //#endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public set depth(depth: boolean) {
-        this._depth = depth;
-    }
-
-    public set clearColor(clearColor: Color) {
-        this._clearColor = clearColor;
-    }
-
+   
     public static get main(): Camera {
 
         const cameraObject = SceneManager.getGameObjectByTag("MainCamera");
@@ -145,30 +109,25 @@ export default class Camera extends Component {
 
     constructor() {
         super("Camera", "Camera");
-        this._clearColor = Color.CHARCOAL;
-        this._fieldOfView = 60;
-        this._aspectRatio = 16 / 9;
-        this._nearPlane = 0.03;
-        this._farPlane = 300;
-        this._depth = true;
+        this.fieldOfViewData = 60;
+        this.aspectRatioData = 16 / 9;
+        this.nearPlaneData = 0.03;
+        this.farPlaneData = 300;
+        this.projectionMatrixData = Matrix4x4.identity;
+        this.viewMatrixData = Matrix4x4.identity;
+
+        this.clearColor = Color.CHARCOAL;
+        this.depth = true;
+
+       
     }
     
     public get projectionMatrix(): Matrix4x4 {
-
-        if (!this.cachedProjectionMatrix) {
-            this.cachedProjectionMatrix = Matrix4x4.createPerspective(
-                this._fieldOfView,
-                this._aspectRatio,
-                this._nearPlane,
-                this._farPlane
-            );
-            this.projectionChanged = false;
-        }
-        return this.cachedProjectionMatrix;
+        return this.projectionMatrixData;
     }
 
     public get viewMatrix() {
-        return this.transform.modelMatrix.inverse();
+        return this.viewMatrixData;
     }
 
     public get viewProjectionMatrix(): Matrix4x4 {

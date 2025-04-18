@@ -1,6 +1,6 @@
 import Identifier from "../components/Identifier";
 
-export default class EngineCache {
+export default class SingleCache {
     private static _caches: Map<number, unknown> = new Map();
 
     public static add<T>(id: Identifier, value: T) {
