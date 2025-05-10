@@ -166,6 +166,12 @@ export default class Shader {
         gl.uniform1i(location, textureUnit);
     }
 
+    public unbindSampler2d(textureUnit: number = 0) {
+        const gl = Display.webGl;
+        gl.activeTexture(gl.TEXTURE0 + textureUnit);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+
     public setSampleCube(name: string, texture: WebGLTexture | null, textureUnit: number = 0) {
         const location = this.getUniformLocation(name);
         if (location === null) {

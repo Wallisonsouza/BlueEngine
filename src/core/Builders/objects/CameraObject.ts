@@ -8,7 +8,7 @@ export default class CameraObject {
         const cameraObject = new GameObject("Camera");
         cameraObject.tag = "MainCamera";
         cameraObject.addComponent(Camera);
-        cameraObject.transform.position = new Vector3(0, 0, 10);
+        cameraObject.transform.position = new Vector3(0, 5, -10);
         return cameraObject;
     }
 

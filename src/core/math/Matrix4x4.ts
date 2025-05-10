@@ -62,7 +62,7 @@ export default class Matrix4x4 {
     }
 
     public multiply(m: Matrix4x4){
-        return Matrix4x4.multiply(this, m);
+        return Matrix4x4.multiply(m, this);
     }
 
     public clone(): Matrix4x4 {
@@ -138,9 +138,9 @@ export default class Matrix4x4 {
    
     public static lookTo(position: Vector3, direction: Vector3, up: Vector3): Matrix4x4 {
     
-        const zAxis = direction.normalize().negative();
-        const xAxis = up.cross(zAxis).normalize();
-        const yAxis = zAxis.cross(xAxis).normalize();
+        const zAxis = direction.normalized.negative();
+        const xAxis = up.cross(zAxis).normalized;
+        const yAxis = zAxis.cross(xAxis).normalized;
     
         const lookToMatrix = new Matrix4x4(
             xAxis.x, yAxis.x, zAxis.x, 0,
@@ -152,66 +152,103 @@ export default class Matrix4x4 {
         return lookToMatrix;
     }
 
-    public static lookAt(eye: Vector3, target: Vector3, up: Vector3): Matrix4x4 {
-        
-        const zAxis = Vector3.normalize(Vector3.subtract(eye, target));  
-        const xAxis = Vector3.normalize(Vector3.cross(up, zAxis));
-        const yAxis = Vector3.normalize(Vector3.cross(zAxis, xAxis));
+    public static createLookAt(eye: Vector3, target: Vector3, up: Vector3): Matrix4x4 {
+        const zAxis = Vector3.normalize(Vector3.subtract(eye, target));
+        const xAxis = Vector3.normalize(Vector3.cross(up, zAxis)); 
+        const yAxis = Vector3.cross(zAxis, xAxis); 
+    
+        const Tx = -Vector3.dot(xAxis, eye);
+        const Ty = -Vector3.dot(yAxis, eye);
+        const Tz = -Vector3.dot(zAxis, eye);
     
         const lookAtMatrix = new Matrix4x4(
-            xAxis.x, yAxis.x, -zAxis.x, 0,
-            xAxis.y, yAxis.y, -zAxis.y, 0,
-            xAxis.z, yAxis.z, -zAxis.z, 0,
-            -Vector3.dot(xAxis, eye),
-            -Vector3.dot(yAxis, eye),
-            -Vector3.dot(zAxis, eye), 
-            1
+            xAxis.x, yAxis.x, zAxis.x, 0,
+            xAxis.y, yAxis.y, zAxis.y, 0,
+            xAxis.z, yAxis.z, zAxis.z, 0,
+            Tx,      Ty,      Tz,      1
         );
     
         return lookAtMatrix;
     }
-    
 
-    public static createPerspective(fov: number, aspectRatio: number, nearPlane: number, farPlane: number): Matrix4x4 {
-        const tanHalfFov = Mathf.tan(Mathf.degToRad(fov) / 2);
-        const range = farPlane - nearPlane;
-   
+    public static createPerspective(
+        fov: number,
+        aspectRatio: number,
+        near: number,
+        far: number
+    ): Matrix4x4 {
+     
+        const fovRad = Mathf.degToRad(fov);
+        const tanHalfFov = Mathf.tan(fovRad / 2);
+    
+        const zRange = far - near;
+    
+        const a = 1 / (aspectRatio * tanHalfFov);
+        const b = 1 / tanHalfFov;
+        const c = (far + near) / zRange;
+        const d = (-2 * far * near) / zRange;
+    
         return new Matrix4x4(
-            1 / (aspectRatio * tanHalfFov), 0, 0, 0,
-            0, 1 / tanHalfFov, 0, 0,
-            0, 0, -(farPlane + nearPlane) / range, -1,
-            0, 0, -2 * (farPlane * nearPlane) / range, 0
+            a, 0, 0, 0,
+            0, b, 0, 0,
+            0, 0, c, 1,
+            0, 0, d, 0
         );
     }
 
-    public static orthographic(left: number, right: number, bottom: number, top: number, nearPlane: number, farPlane: number): Matrix4x4 {
-        const width = right - left;
-        const height = top - bottom;
-        const depth = farPlane - nearPlane;
-
+    public static createOrthographic(
+        left: number, right: number,
+        bottom: number, top: number,
+        near: number, far: number
+    ): Matrix4x4 {
+        const sX = 2 / (right - left);  
+        const sY = 2 / (top - bottom);  
+        const sZ = -2 / (far - near); 
+    
+        const tx = -(right + left) / (right - left); 
+        const ty = -(top + bottom) / (top - bottom); 
+        const tz = -(far + near) / (far - near); 
+    
         return new Matrix4x4(
-            2 / width, 0, 0, 0,
-            0, 2 / height, 0, 0,
-            0, 0, -2 / depth, 0,
-            - (right + left) / width, - (top + bottom) / height, - (farPlane + nearPlane) / depth, 1
+            sX,  0,   0,   0,
+             0, sY,   0,   0,
+             0,  0,  sZ,   0,
+            tx, ty,  tz,   1
         );
     }
-    
+        
+    /**
+     * Multiplica duas matrizes 4x4 no formato column-major (compatível com WebGL/OpenGL).
+     * 
+     *  result = lhs * rhs.
+     */
     public static multiply(lhs: Matrix4x4, rhs: Matrix4x4): Matrix4x4 {
-        const result = new Matrix4x4();
-        const a = lhs.getData();
+        const a = lhs.getData(); 
         const b = rhs.getData();
-        const r = result.getData();
-    
-        for (let i = 0; i < 16; i += 4) {
-            const ai0 = a[i], ai1 = a[i + 1], ai2 = a[i + 2], ai3 = a[i + 3];
-            for (let j = 0; j < 4; j++) {
-                r[i + j] = ai0 * b[j] + ai1 * b[j + 4] + ai2 * b[j + 8] + ai3 * b[j + 12];
+        const r = new Float32Array(16);
+
+        for (let col = 0; col < 4; col++) {
+            for (let row = 0; row < 4; row++) {
+                let sum = 0;
+                for (let k = 0; k < 4; k++) {
+                    sum += a[k * 4 + row] * b[col * 4 + k];
+                }
+                r[col * 4 + row] = sum;
             }
         }
-    
-        return result;
+        
+        return Matrix4x4.fromF32Array(r);
+
     }
+
+    public static fromF32Array(data: Float32Array): Matrix4x4 {
+        const m = new Matrix4x4();
+        m.setData(data);
+        return m;
+    }
+    
+
+    
     
 
     public static transpose(m: Matrix4x4): Matrix4x4 {

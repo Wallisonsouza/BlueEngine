@@ -314,7 +314,7 @@ export default class Quaternion {
 
 
     static createRotationAxis(axis: Vector3, angle: number): Quaternion {
-        const normalizedAxis = axis.normalize();
+        const normalizedAxis = axis.normalized;
         const halfAngle = angle / 2;
 
         const sinHalfAngle = Math.sin(halfAngle);

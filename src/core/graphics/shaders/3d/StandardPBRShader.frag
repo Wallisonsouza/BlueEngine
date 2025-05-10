@@ -13,12 +13,15 @@ const int EMISSIVE = 1 << 4;            // 10000 (16)
 const int PREFILTER_FLAG = 1 << 5;      // 100000 (32)
 const int SKY_BOX = 1 << 6;
 
+const int SHADED = 0;  
+const int SOLID = 1;  
+const int EMISSION = 2; 
+const int TRANSPARENT = 3;   
 
-const int COMBINED = 0;
-const int NORMAL = 1;
-const int POSITION = 2;
-const int EMISSION = 3;
-const int AO = 4;
+const int  NORMAL = 10;
+const int   POSITION = 11;
+const int  AO = 12;
+const int DEPTH = 13;
 
 uniform int u_lightCount;
 uniform int u_renderPass;
@@ -31,7 +34,10 @@ struct PassData {
     vec3 bitangent;
     vec3 normal;
     mat4 projection;
+    vec4 shadowSpace;
+
 };
+
 
 struct Light {
     vec3 position;
@@ -65,12 +71,17 @@ struct CameraData {
 struct SurfaceData {
     vec3 normal;
     vec3 tangent;
+    float shadow;
+};
+
+struct LightData {
+    vec3 ambientColor;
 };
  
-MaterialData material;
-CameraData camera;
-SurfaceData surface;
-
+MaterialData materialData;
+CameraData cameraData;
+SurfaceData surfaceData;
+LightData lightData;
 
 
 
@@ -92,7 +103,7 @@ uniform sampler2D u_baseColorTexture;
 // uniform sampler2D u_lut;
 // uniform samplerCube u_skyBox;
 //#endregion
-
+uniform sampler2D u_shadowMap;
 
 const int MAX_LIGHTS = 100;
 
@@ -288,7 +299,7 @@ vec3 cookTorranceBRDF(
 
 
 
-        vec3 kd = mix(vec3(1.0) - F, vec3(0.0), material.metalness); 
+        vec3 kd = mix(vec3(1.0) - F, vec3(0.0), materialData.metalness); 
 
 
         vec3 diffuse = orenNayar(albedo, 
@@ -441,9 +452,28 @@ vec3 fresnel(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
+
+vec3 toTextureCoords(vec3 coord) {
+    return coord * 0.5 + 0.5;
+}
+
+float shadow(sampler2D shadowMap, vec4 lightSpace, float bias) {
+    vec3 projCoords = toTextureCoords(lightSpace.xyz);
+
+    if (projCoords.z > 1.0 || projCoords.x < 0.0 || projCoords.x > 1.0 || projCoords.y < 0.0 || projCoords.y > 1.0)
+        return 0.0;
+
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
+    return 1.0 - shadow;
+}
+
+
 void combinedPass() {
     float ior = u_ior;
-    camera.viewDirection = normalize(u_viewPosition - pass.fragment);
+    cameraData.viewDirection = normalize(u_viewPosition - pass.fragment);
 
     vec3 a = vec3(0);
      vec3 direcionalColor = vec3(0);
@@ -453,21 +483,24 @@ void combinedPass() {
         if (light.type == 0) { // Luz Ambiente
             
             vec3 ambientColor = light.color * light.intensity;
-            vec3 diffuseColor = srgb_to_linear_rgb(material.baseColor);
+            vec3 diffuseColor = srgb_to_linear_rgb(materialData.baseColor);
             
-            vec3 normal = normalize(surface.normal);
-            vec3 viewDir = normalize(camera.viewDirection);
+            vec3 normal = normalize(surfaceData.normal);
+            vec3 viewDir = normalize(cameraData.viewDirection);
 
             // Calcula o F0 com base no IOR
             vec3 F0 = vec3(F0_from_ior(u_ior));
 
             vec3 fresnel = fresnel(max(dot(viewDir, normal), 0.0), F0);
-            float specularFactor = (1.0 - material.roughness) * fresnel.x;
+            float specularFactor = (1.0 - materialData.roughness) * fresnel.x;
 
             
          
            a += diffuseColor * ambientColor; 
            a += ambientColor * specularFactor;
+           lightData.ambientColor = a;
+
+           
         }
 
        
@@ -475,30 +508,53 @@ void combinedPass() {
             vec3 lightDir = normalize(-light.direction);
 
             vec3 brdf = cookTorranceBRDF(
-                camera.viewDirection,
-                surface.normal, 
+                cameraData.viewDirection,
+                surfaceData.normal, 
                 lightDir,
-                material.baseColor,
-                material.roughness, 
-                material.metalness, 
+                materialData.baseColor,
+                materialData.roughness, 
+                materialData.metalness, 
                 ior
             );
 
              direcionalColor += brdf * light.color * light.intensity;
+             
+          
 
         }
     }
 
-    material.brdf =  direcionalColor + a;
+    materialData.brdf =  direcionalColor + a;
 
    
 }
 
+float LinearizeDepth(float depth, float near, float far) {
+    float z = depth * 2.0 - 1.0; // NDC [-1, 1]
+    return (2.0 * near * far) / (far + near - z * (far - near));
+}
+
+// Função principal para calcular a sombra usando Poisson Disk Sampling
+float calculateShadow(sampler2D shadowMap, vec4 lightSpace, float bias) {
+    vec3 projCoords = lightSpace.xyz / lightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+
+    if (projCoords.z > 1.0 || projCoords.x < 0.0 || projCoords.x > 1.0 || projCoords.y < 0.0 || projCoords.y > 1.0)
+        return 0.0;
+
+    float currentDepth = projCoords.z;
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+
+    return currentDepth - bias > closestDepth ? 1.0 : 0.0;
+}
+
+
+
 void main() {
  
     processData(
-        material, 
-        surface,
+        materialData, 
+        surfaceData,
         pass.uv, 
         u_textureFlags, 
         u_metallicRoughnessTexture,
@@ -517,41 +573,60 @@ void main() {
     
  combinedPass();
 
+    switch (u_renderPass) {
 
-    switch(u_renderPass) {
-        case COMBINED:
+        case SHADED: {
+            vec3 linearColor = materialData.brdf; 
+            vec3 tonemappedColor = reinhardTonemap(linearColor);    
+            vec3 srgbColor = linear_rgb_to_srgb(tonemappedColor);
 
-
-      // 1. Calcular o BRDF e adicionar o Specular
-        vec3 linearColor = material.brdf;  // Manter tudo linear
-        vec3 tonemappedColor = reinhardTonemap(linearColor);         // Tonemapping no espaço linear
-        vec3 srgbColor = linear_rgb_to_srgb(tonemappedColor); // Converter para sRGB no final
-        FragColor = vec4(vec3(srgbColor), material.alpha);
-
-
+            
+            float shadow = shadow(u_shadowMap, pass.shadowSpace, 0.005);
+            surfaceData.shadow = shadow;
+           
+            FragColor = vec4(srgbColor  * surfaceData.shadow, materialData.alpha);
             break;
-         
+        }
 
-        // case NORMAL:
-        //     FragColor = vec4(material.surfaceNormal, 1.0f);
+        // case SOLID: {
+        //     vec3 linearColor = materialData.baseColor; 
+        //     vec3 tonemappedColor = reinhardTonemap(linearColor+ lightData.ambientColor);   
+        //     FragColor = vec4(tonemappedColor , materialData.alpha);
         //     break;
+        // }
 
-        // case POSITION:
-        //     FragColor = vec4(pass.fragment, 1.0f);
+        // case EMISSION: {
+        //     // Somente emissão (útil para compor depois)
+        //     FragColor = vec4(materialData.emissive, 1.0);
         //     break;
+        // }
 
-        // case EMISSION:
-        //     FragColor = vec4(material.emissive, material.alpha);
+        // case NORMAL: {
+        //     FragColor = vec4(surfaceData.normal, 1.0); 
         //     break;
+        // }
 
-        // case AO:
-        //     FragColor = vec4(vec3(material.ao.r), 1.0f);
-        //     break;
+        // case TRANSPARENT: {
+        //     vec3 linearColor = materialData.brdf; 
+        //     vec3 tonemappedColor = ACESFilm(linearColor);    
+        //     vec3 srgbColor = linear_rgb_to_srgb(tonemappedColor);
+        //     FragColor = vec4(srgbColor, materialData.alpha);
 
-        // default:
-        //     FragColor = vec4(0.0f);
+        //     // IMPORTANTE:
+        //     // Certifique-se que objetos com esse pass sejam desenhados:
+        //     // - com blending ativado: gl.enable(GL_BLEND)
+        //     // - na ordem correta (back-to-front)
+        //     // - com depth write desabilitado: gl.depthMask(false)
+            
         //     break;
+        // }
+
+        default: {
+            FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+            break;
+        }
     }
+
 }
 
 

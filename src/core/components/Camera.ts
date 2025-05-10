@@ -39,7 +39,6 @@ export default class Camera extends Component {
     public get farPlane(): number {
         return this.farPlaneData;
     }
-    //#endregion
 
     private clearProjectionCache() {
         this.projectionMatrixData = Matrix4x4.createPerspective(
@@ -50,7 +49,6 @@ export default class Camera extends Component {
         );
     }
 
-
     public setGameObject(gameObject: GameObject): void {
         super.setGameObject(gameObject);
         this.transform.onModelMatrixUpdate(() => {
@@ -58,7 +56,6 @@ export default class Camera extends Component {
         })
     }
 
-    
     //#region Setters
     public set fieldOfView(fov: number) {
         if (this.fieldOfViewData !== fov) {
@@ -115,11 +112,8 @@ export default class Camera extends Component {
         this.farPlaneData = 300;
         this.projectionMatrixData = Matrix4x4.identity;
         this.viewMatrixData = Matrix4x4.identity;
-
         this.clearColor = Color.CHARCOAL;
         this.depth = true;
-
-       
     }
     
     public get projectionMatrix(): Matrix4x4 {
@@ -152,7 +146,7 @@ export default class Camera extends Component {
         const farPointWorld = this.transform.transformPointToWorldSpace(farPointCamera);
 
         // Direção do raio: ponto distante menos o ponto próximo
-        const rayDirection = farPointWorld.subtract(nearPointWorld).normalize();
+        const rayDirection = farPointWorld.subtract(nearPointWorld).normalized;
 
         // Origem do raio é o ponto próximo
         const rayOrigin = nearPointWorld;

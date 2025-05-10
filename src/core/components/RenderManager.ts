@@ -2,6 +2,8 @@ import Camera from "./Camera";
 import Renderer from "./Renderer";
 import Material from "../graphics/material/Material";
 import RendererManager from "../managers/RendererManager";
+import WorldOptions from "../../../engine/WorldOptions";
+import { RenderPass } from "../enum/RenderPass";
 
 export default class RendMang {
 
@@ -13,7 +15,7 @@ export default class RendMang {
         this.opaqueObjects.clear();
         this.transparentObjects.clear();
 
-        const renderers = RendererManager.getAll();
+        const renderers = RendererManager.getActiveRenderers();
 
         for(const renderer of renderers) {
             if(!renderer) {continue}
@@ -32,6 +34,9 @@ export default class RendMang {
     }
 
     private static renderOpaqueObjects(gl: WebGL2RenderingContext, camera: Camera): void {
+
+        if(WorldOptions.renderPass === RenderPass.TRANSPARENT) return;
+        
         for (const [material, renderers] of this.opaqueObjects) {
             
             material.apply();

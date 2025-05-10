@@ -12,7 +12,7 @@ export default class RayCast {
         // Calcula a inversa da rotação uma vez antes do loop
         const invRotation = Quaternion.inverse(transform.rotation);
         const localOrigin = Quaternion.multiplyVector3(invRotation, ray.origin.subtract(transform.position));
-        const localDirection = Quaternion.multiplyVector3(invRotation, ray.direction).normalize();
+        const localDirection = Quaternion.multiplyVector3(invRotation, ray.direction).normalized();
 
         const vertices = mesh.vertices;
         const triangles = mesh.triangles;
@@ -48,7 +48,7 @@ export default class RayCast {
             threshold: number = 0.09,
             negative: boolean = false
     ): Vector3 | null {
-            const lineDir = end.subtract(start).normalize(); // Direção da linha
+            const lineDir = end.subtract(start).normalized(); // Direção da linha
             const rayToStart = start.subtract(ray.origin); // Vetor do raio para o início da linha
         
             // Calcula a projeção do início da linha no raio

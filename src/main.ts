@@ -1,7 +1,6 @@
 import Engine from "./core/engine";
 import Events from "./Events";
 import Display from "./core/components/Display";
-import Camera from "./core/components/Camera";
 
 //#region CONFIG
     const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -10,8 +9,6 @@ import Camera from "./core/components/Camera";
     }
 
     const gl = canvas.getContext("webgl2", {
-        stencil: true,
-        depth: true,
         alpha: true,
         desynchronized: false,
         preserveDrawingBuffer: true,
@@ -22,12 +19,26 @@ import Camera from "./core/components/Camera";
         console.error("Não foi possível obter o contexto WebGL2.");
     }
 
+    gl.getExtension('EXT_color_buffer_float');
+    gl.getExtension("OES_texture_float_linear");
+    gl.getExtension("WEBGL_color_buffer_float"); 
+    gl.getExtension("EXT_color_buffer_half_float");
+    gl.getExtension("EXT_float_blend");
+
+    // if (!ext) {
+    //     console.warn("EXT_float_blend não suportada — blending com floats pode não funcionar corretamente.");
+    // } else {
+    //     console.log("EXT_float_blend ativada.");
+    // }
+    
+    
+
+
     Display.webGl = gl;
     window.addEventListener("resize", ()=>{ Display.applyResolution() });
     Events.addBlockResizeEvent();
 
 //#endregion
-
 
 // Cria uma nova instância da engine, passando o contexto WebGL
 const engine = new Engine(gl);

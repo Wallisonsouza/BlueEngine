@@ -35,8 +35,8 @@ export default class CameraControler extends Scrypt {
     private handleInput(deltaTime: number): void {
         if (Input.getMouseButton(2)) {
             const delta = Input.mouseDelta;
-            this.cameraRotation.y -= delta.x * this.rotationSpeed;
-            this.cameraRotation.x -= delta.y * this.rotationSpeed;
+            this.cameraRotation.y += delta.x * this.rotationSpeed;
+            this.cameraRotation.x += delta.y * this.rotationSpeed;
         }
 
         let movement = Vector3.zero;
@@ -46,7 +46,8 @@ export default class CameraControler extends Scrypt {
             Input.getKey(KeyCode.S) || 
             Input.getKey(KeyCode.A) || 
             Input.getKey(KeyCode.D) || 
-            Input.getKey(KeyCode.Space)
+            Input.getKey(KeyCode.Space) || 
+            Input.getKey(KeyCode.Ctrl)
         ) {
             if (this.aceleration) {
                 this.speed = Mathf.lerp(this.speed, this.maxSpeed, deltaTime * this.maxLerpFactor);
@@ -54,13 +55,13 @@ export default class CameraControler extends Scrypt {
                 this.speed = this.maxSpeed;
             }
 
-            movement = this.calculateMovement().normalize();
+            movement = this.calculateMovement().normalized;
         } else {
             this.speed = Mathf.lerp(this.speed, this.minSpeed, deltaTime * this.minLerpFactor);
         }
 
         if (!movement.equals(Vector3.zero)) {
-            movement = movement.normalize().scale(this.speed * 100 * deltaTime);
+            movement = movement.normalized.scale(this.speed * 100 * deltaTime);
             this.targetPosition = this.transform.position.add(movement);
         }
     }
@@ -68,11 +69,14 @@ export default class CameraControler extends Scrypt {
     private calculateMovement(): Vector3 {
         let movement = Vector3.zero;
 
-        if (Input.getKey(KeyCode.W)) movement = movement.add(this.transform.forward.negative());
-        if (Input.getKey(KeyCode.S)) movement = movement.add(this.transform.forward);
-        if (Input.getKey(KeyCode.A)) movement = movement.add(this.transform.right.negative());
+        if (Input.getKey(KeyCode.W)) movement = movement.add(this.transform.fwd);
+        if (Input.getKey(KeyCode.S)) movement = movement.add(this.transform.back);
+  
         if (Input.getKey(KeyCode.D)) movement = movement.add(this.transform.right);
+        if (Input.getKey(KeyCode.A)) movement = movement.add(this.transform.left);
+        
         if (Input.getKey(KeyCode.Space)) movement = movement.add(this.transform.up);
+        if (Input.getKey(KeyCode.Ctrl)) movement = movement.add(this.transform.down);
         return movement;
     }
 

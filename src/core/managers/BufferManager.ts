@@ -217,7 +217,7 @@ export default class BufferManager {
     private static bufferCache: Map<number, WebGLVertexArrayObject | null> = new Map();
     private static uniformsBuffer: Map<number, WebGLBuffer> = new Map();
      
-    public static getBufferArrayObject(id: number) {
+    public static getVBO(id: number) {
         return this.bufferCache.get(id) ?? null;
     }
 

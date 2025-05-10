@@ -18,7 +18,7 @@ export default class RendererManager {
         return this.renderers.get(id) ?? null;
     }
 
-    public static getAll() {
-        return this.renderers.values();
+    public static getActiveRenderers() {
+        return [...this.renderers.values()];
     }
 }

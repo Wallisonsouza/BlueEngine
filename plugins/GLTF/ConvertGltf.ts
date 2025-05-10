@@ -94,7 +94,7 @@ export default class Conversors {
 
         const mesh = new Mesh(
             Vector3.fromF32Array(parsedMesh.vertices),
-            parsedMesh.indices ? parsedMesh.indices : null,
+            parsedMesh.indices ? parsedMesh.indices : [],
             parsedMesh.normals ? Vector3.fromF32Array(parsedMesh.normals) : null,
             parsedMesh.uvs ? Vector2.fromF32Array(parsedMesh.uvs) : null
           

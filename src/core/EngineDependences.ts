@@ -5,10 +5,22 @@ import SquareGeometry from "./geometries/SquareGeometry";
 import PlaneGeometry from "./geometries/PlaneGeometry";
 import CubeGeometry from "./geometries/CubeGeometry";
 import SphereGeometry from "./geometries/SphereGeometry";
+import Vector3 from "./math/Vector3";
 
 export async function loadDependencies() {
 
     await Promise.all([
+        ShaderManager.createShader(
+            "src/core/graphics/shaders/post_processing/fullscreen.vert",
+            "src/core/graphics/shaders/post_processing/fullscreen.frag",
+            "fullscreen"
+        ),
+        ShaderManager.createShader(
+            "src/core/graphics/shaders/post_processing/shadow.vert",
+            "src/core/graphics/shaders/post_processing/shadow.frag",
+            "shadow"
+        ),
+
         ShaderManager.createShader(
             "src/core/graphics/shaders/3d/StandardShader.vert",
             "src/core/graphics/shaders/3d/StandardShader.frag",
@@ -57,10 +69,13 @@ export async function loadDependencies() {
         MeshManager.addMesh(plane);
         BufferManager.createMeshBuffer(plane);
 
-        const square = SquareGeometry.create();
+        const square = SquareGeometry.create(new Vector3(2, 2, 2));
         square.name = "square";
         MeshManager.addMesh(square);
         BufferManager.createMeshBuffer(square);
+
+  
+
 
         const cube = CubeGeometry.create();
         cube.name = "cube";

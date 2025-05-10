@@ -14,6 +14,7 @@ import { NullReferenceException } from "../../../Error";
 import LightManager from "../../../components/light/LightManager";
 import State from "../../../State";
 import UniformBlock from "../../../managers/UniformBlock";
+import ShadowFrameBuffer from "../../../ShadowTarget";
 
 
 function uniformFloatState(initial: number, uniformBlock: UniformBlock, name: string): State<number> {
@@ -143,6 +144,8 @@ export default class PBRMaterial extends Material {
         if (this.baseColorTexture?.webGLTexture) {
             this.flag |= TextureType.BASE_COLOR;
             shader.setSample2d("u_baseColorTexture", this.baseColorTexture.webGLTexture, 0);
+            shader.unbindSampler2d(0);
+        
         }
 
         if (this.normalTexture?.webGLTexture) {
@@ -159,6 +162,8 @@ export default class PBRMaterial extends Material {
             this.flag |= TextureType.EMISSIVE;
             shader.setSample2d("u_emissiveTexture", this.emissiveTexture.webGLTexture, 3);
         }
+
+        shader.setSample2d("u_shadowMap", ShadowFrameBuffer.depthTexture, 4);
 
         shader.setInt("u_textureFlags", this.flag);
         this.flag = 0;
@@ -191,7 +196,7 @@ export default class PBRMaterial extends Material {
             } else if (light.type === DirecionalLight.TYPE) {
                 this.shader.setInt(`u_lights[${i}].type`, 1);
                 this.shader.setVec3(`u_lights[${i}].position`, light.transform.position.xyz);
-                this.shader.setVec3(`u_lights[${i}].direction`, light.transform.forward.xyz);
+                this.shader.setVec3(`u_lights[${i}].direction`, light.transform.fwd.xyz);
             }
         }
 

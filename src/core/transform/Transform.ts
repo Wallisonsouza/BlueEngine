@@ -5,7 +5,7 @@ import Matrix4x4 from "../math/Matrix4x4";
 import { Space } from "../enum/Space";
 import Rotation from "./Rotation";
 import Translation from "./Translation";
-import TransformHierarchy from "./Parent";
+import TransformHierarchy from "./TransformHierarchy";
 
 export default class Transform extends Component {
     // === Hierarchy ===
@@ -89,32 +89,46 @@ export default class Transform extends Component {
         return this.modelMatrix.getTranslation();
     }
 
-    public get forward(): Vector3 {
-        return this.rotationData.multiplyVector3(Vector3.FORWARD);
+    public get fwd(): Vector3 {
+        return this.rotationData.multiplyVector3(Vector3.forward);
+    }
+
+    public get back(): Vector3 {
+        return this.rotationData.multiplyVector3(Vector3.back);
     }
 
     public get right(): Vector3 {
-        return this.rotationData.multiplyVector3(Vector3.RIGHT);
+        return this.rotationData.multiplyVector3(Vector3.right);
+    }
+
+    public get left(): Vector3 {
+        return this.rotationData.multiplyVector3(Vector3.left);
     }
 
     public get up(): Vector3 {
-        return this.rotationData.multiplyVector3(Vector3.UP);
+        return this.rotationData.multiplyVector3(Vector3.up);
     }
+    public get down(): Vector3 {
+        return this.rotationData.multiplyVector3(Vector3.down);
+    }
+
 
     // === Transform Operations ===
 
     public translate(translation: Vector3, space: Space = Space.SELF): void {
-        Translation.createTranslationByDirection(this.position, this.rotation, translation, space);
+        this.position = Translation.createTranslationByDirection(this.position, this.rotation, translation, space);
         this.updateModelMatrix();
     }
 
     public rotate(axis: Vector3, angle: number, space: Space = Space.SELF): void {
-        Rotation.createRotationByAxis(this.rotation, axis, angle, space);
+        this.rotation = Rotation.createRotationByAxis(this.rotation, axis, angle, space);
         this.updateModelMatrix();
     }
 
     public rotateAround(point: Vector3, axis: Vector3, angle: number): void {
-        Rotation.rotateAroundPoint(this.position, this.rotation, point, axis, angle);
+        const p = Rotation.rotateAroundPoint(this.position, this.rotation, point, axis, angle);
+        this.rotation = p.rotation;
+        this.position = p.position;
         this.updateModelMatrix();
     }
 

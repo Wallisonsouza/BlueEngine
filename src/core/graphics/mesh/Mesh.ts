@@ -4,6 +4,8 @@ import Vector2 from "../../math/Vector2";
 import Vector3 from "../../math/Vector3";
 
 export default class Mesh extends Entity {
+
+
     public name: string = "new mesh";
     public vertices: Vector3[] | null = null;
     public normals: Vector3[] | null = null;
@@ -12,6 +14,19 @@ export default class Mesh extends Entity {
     public bitangents: Vector3[] | null = null;
     private _triangles: number[];
     public wireframeTriangles: number[] | null = null;
+
+
+
+    private $min: Vector3;
+    private $max: Vector3;
+
+    public get min() {
+        return this.$min;
+    }
+
+    public get max() {
+        return this.$max;
+    }
 
     private _indexDataType: BufferDataType = BufferDataType.UNSIGNED_BYTE;
 
@@ -55,7 +70,34 @@ export default class Mesh extends Entity {
             this.recalculateTangents();
         }
 
-        this.wireframeTriangles = this.generateWireframe(triangles, vertices);
+
+        const minMax = this.calculateMinMax();
+        this.$min = minMax.min;
+        this.$max = minMax.max;
+
+        this.wireframeTriangles = this.generateWireframe(triangles);
+    }
+
+    private calculateMinMax(): { min: Vector3, max: Vector3 } {
+        if (!this.vertices || this.vertices.length === 0) {
+            console.warn("Nenhum vértice encontrado.");
+            return { min: new Vector3(0, 0, 0), max: new Vector3(0, 0, 0) }; 
+        }
+
+        let min = new Vector3(Infinity, Infinity, Infinity);
+        let max = new Vector3(-Infinity, -Infinity, -Infinity);
+
+        for (const vertex of this.vertices) {
+            min.x = Math.min(min.x, vertex.x);
+            min.y = Math.min(min.y, vertex.y);
+            min.z = Math.min(min.z, vertex.z);
+
+            max.x = Math.max(max.x, vertex.x);
+            max.y = Math.max(max.y, vertex.y);
+            max.z = Math.max(max.z, vertex.z);
+        }
+
+        return { min, max };
     }
    
     // private calculateFaceNormals(vertices: Vector3[], triangles: number[]): Vector3[] {
@@ -104,63 +146,75 @@ export default class Mesh extends Entity {
     //     this.calculateVertexNormalsWithArea(this.vertices, this.triangles, faceNormals);
     // }
 
+
+
     recalculateTangents(): void {
+  
+        if (!this.vertices || !this.triangles || !this.uvs) return;
+        if (this.vertices.length < 3 || this.triangles.length < 3 || this.uvs.length < 3) return;
 
-        if (
-            (this.vertices && this.vertices.length >= 3) && 
-            (this.triangles && this.triangles.length >= 3) && 
-            (this.uvs && this.uvs.length >= 3)
-        ) {
-          
-            this.tangents = Array.from({ length: this.vertices.length }, () => new Vector3(0, 0, 0));
-            this.bitangents = Array.from({ length: this.vertices.length }, () => new Vector3());
-    
-            for (let i = 0; i < this.triangles.length; i += 3) {
-                const i0 = this.triangles[i];
-                const i1 = this.triangles[i + 1];
-                const i2 = this.triangles[i + 2];
-    
-                const v0 = this.vertices[i0];
-                const v1 = this.vertices[i1];
-                const v2 = this.vertices[i2];
-    
-                const uv0 = this.uvs[i0];
-                const uv1 = this.uvs[i1];
-                const uv2 = this.uvs[i2];
-    
-                const edge1 = v1.subtract(v0);
-                const edge2 = v2.subtract(v0);
-    
-                const deltaUV1 = uv1.subtract(uv0);
-                const deltaUV2 = uv2.subtract(uv0);
-    
-                const det = deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x;
-    
-                if (det === 0) {
-                    console.warn("Zero determinant, skipping tangent calculation for triangle.");
-                    continue;
-                }
-    
-                const f = 1.0 / det;
-                const tangent = edge1.scale(deltaUV2.y).subtract(edge2.scale(deltaUV1.y)).scale(f);
-               
-    
-                this.tangents[i0] = this.tangents[i0].add(tangent);
-                this.tangents[i1] = this.tangents[i1].add(tangent);
-                this.tangents[i2] = this.tangents[i2].add(tangent);
+        this.tangents = new Array(this.vertices.length).fill(Vector3.zero);
+        this.bitangents = new Array(this.vertices.length).fill(Vector3.zero);
 
-                const bitangent = edge2.scale(deltaUV1.x).subtract(edge1.scale(deltaUV2.x)).scale(f);
-                this.bitangents[i0] = this.bitangents[i0].add(bitangent);
-                this.bitangents[i1] = this.bitangents[i1].add(bitangent);
-                this.bitangents[i2] = this.bitangents[i2].add(bitangent);
+        for (let i = 0; i < this.triangles.length; i += 3) {
+            const i0 = this.triangles[i];
+            const i1 = this.triangles[i + 1];
+            const i2 = this.triangles[i + 2];
+
+            const v0 = this.vertices[i0];
+            const v1 = this.vertices[i1];
+            const v2 = this.vertices[i2];
+
+            const uv0 = this.uvs[i0];
+            const uv1 = this.uvs[i1];
+            const uv2 = this.uvs[i2];
+
+            const edge1 = v1.subtract(v0);
+            const edge2 = v2.subtract(v0);
+
+            const deltaUV1 = uv1.subtract(uv0);
+            const deltaUV2 = uv2.subtract(uv0);
+
+            const det = deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x;
+
+            if (det === 0) {
+                console.warn("Zero determinant, skipping tangent calculation for triangle.");
+                continue;
             }
-    
-            this.tangents = this.tangents.map(t => t.normalize());
-            this.bitangents = this.bitangents.map(b => b.normalize());
+
+            const f = 1.0 / det;
+            const tangent = edge1.scale(deltaUV2.y).subtract(edge2.scale(deltaUV1.y)).scale(f);
+            const bitangent = edge2.scale(deltaUV1.x).subtract(edge1.scale(deltaUV2.x)).scale(f);
+
+            // Acumulando tangentes e bitangentes nos índices
+            this.tangents[i0] = this.tangents[i0].add(tangent);
+            this.tangents[i1] = this.tangents[i1].add(tangent);
+            this.tangents[i2] = this.tangents[i2].add(tangent);
+
+            this.bitangents[i0] = this.bitangents[i0].add(bitangent);
+            this.bitangents[i1] = this.bitangents[i1].add(bitangent);
+            this.bitangents[i2] = this.bitangents[i2].add(bitangent);
+        }
+
+        for (let i = 0; i < this.vertices.length; i++) {
+            const tangent = this.tangents[i];
+            const bitangent = this.bitangents[i];
+
+            const tangentLength = tangent.length();
+            const bitangentLength = bitangent.length();
+
+            if (tangentLength > 0) {
+                tangent.scale(1.0 / tangentLength);
+            }
+
+            if (bitangentLength > 0) {
+                bitangent.scale(1.0 / bitangentLength);
+            }
         }
     }
     
-    private generateWireframe(indices: number[], vertices: Vector3[]): number[] {
+    
+    private generateWireframe(indices: number[]): number[] {
         const edges = new Set<string>();
         const wireframeIndices: number[] = [];
     

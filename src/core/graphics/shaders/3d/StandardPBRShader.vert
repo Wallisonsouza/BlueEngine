@@ -16,6 +16,7 @@ layout(std140) uniform CameraUniform {
 
 
 uniform mat4 u_modelMatrix;
+uniform mat4 u_lightSpaceMatrix;
 
 struct PassData {
     vec3 fragment;
@@ -24,6 +25,7 @@ struct PassData {
     vec3 bitangent;
     vec3 normal;
     mat4 projection;
+    vec4 shadowSpace;
 
 };
 
@@ -32,6 +34,9 @@ out PassData pass;
 void main() {
 
     vec4 fragPos = u_modelMatrix * vec4(a_position, 1.0);
+    pass.shadowSpace = u_lightSpaceMatrix * fragPos;
+
+    
     pass.fragment = fragPos.xyz;
     pass.uv = a_uv;
     pass.projection = u_camera_projection_matrix;
@@ -44,7 +49,7 @@ void main() {
     // pass.ao = computeAO(fragPos.xyz, pass.normal);
     vec4 viewPosition = u_camera_view_matrix * fragPos;
     vec4 modelViewProjection = u_camera_projection_matrix * viewPosition;
-
+   
     gl_Position = modelViewProjection;
 }
        

@@ -6,7 +6,7 @@ export default class Ray {
 
     constructor(origin: Vector3, direction: Vector3) {
         this.origin = origin;
-        this.direction = direction.normalize(); 
+        this.direction = direction.normalized(); 
     }
 
     public intersectTriangle(rayOrigin: Vector3, rayDirection: Vector3, v0: Vector3, v1: Vector3, v2: Vector3): { t: number, point: Vector3 } | null {
@@ -45,7 +45,7 @@ export default class Ray {
         threshold: number = 0.09,
         negative: boolean = false
     ): Vector3 | null {
-        const lineDir = end.subtract(start).normalize(); // Direção da linha
+        const lineDir = end.subtract(start).normalized(); // Direção da linha
         const rayToStart = start.subtract(ray.origin); // Vetor do raio para o início da linha
     
         // Calcula a projeção do início da linha no raio

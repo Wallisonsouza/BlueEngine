@@ -56,7 +56,9 @@ export default class Display {
         }
     }
     
-    
+    public static addLog(log: string) {
+        this.element.innerText = log;
+    }
 
     private static extractFunctionAndFile(stackLine: string): { functionName: string | null, fileName: string | null } {
         if (!stackLine) return { functionName: null, fileName: null };

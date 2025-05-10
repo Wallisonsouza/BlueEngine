@@ -3,6 +3,7 @@ import Vector2 from "../math/Vector2";
 import Vector3 from "../math/Vector3";
 
 export default class SquareGeometry {
+    
     public static create(size: Vector3 = new Vector3(1, 1, 1)): Mesh {
         const halfSize = size.scale(0.5);
 

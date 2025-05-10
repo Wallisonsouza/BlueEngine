@@ -3,63 +3,41 @@ import BufferManager from "../../managers/BufferManager";
 import Camera from "../../components/Camera";
 import MeshFilter from "../../components/MeshFilter";
 import Renderer from "../../components/Renderer";
-import { RenderMode } from "../../enum/RenderMode";
+import Shadow from "../../Shadow";
 
 export default class MeshRenderer extends Renderer {
-
     constructor() {
         super("MeshRenderer");
     }
 
     public render(gl: WebGL2RenderingContext, camera: Camera): void {
-
         const meshFilter = this.gameObject.getComponentByType<MeshFilter>("MeshFilter");
-
-        if (!meshFilter) {
-            console.warn("Mesh ou propriedades essenciais não encontradas. Verifique se a malha e o material estão definidos.");
-            return;
-            
-        };
-
-        const mesh = meshFilter.mesh;
-        if (!mesh) {
-            console.warn("Mesh ou propriedades essenciais não encontradas. Verifique se a malha e o material estão definidos.");
-            return;
-        }
-
         const material = this.material;
 
-        if(!material) {
-            console.warn("Mesh ou propriedades essenciais não encontradas. Verifique se a malha e o material estão definidos.");
+        if (!meshFilter || !meshFilter.mesh || !material || !material.shader) {
+            console.warn(
+                "MeshRenderer: Malha ou material ausente. Verifique se 'MeshFilter', 'mesh', 'material' e 'shader' estão definidos."
+            );
             return;
         }
-        
+
+        const mesh = meshFilter.mesh;
         const shader = material.shader;
-        if (!shader) {
-            console.warn("Mesh ou propriedades essenciais não encontradas. Verifique se a malha e o material estão definidos.");
-            return;
-        };
+        const vbo = BufferManager.getVBO(mesh.id.value);
 
-       
-        let meshBuffer;
-       
-        meshBuffer =  BufferManager.getBufferArrayObject(mesh.id.value);
-
-        if(!meshBuffer) {
-            console.warn("Mesh ou propriedades essenciais não encontradas. Verifique se a malha e o material estão definidos.");
+        if (!vbo) {
+            console.warn(`MeshRenderer: VBO não encontrado para mesh ID '${mesh.id.value}'.`);
             return;
         }
 
-        if(WorldOptions.renderMode === RenderMode.LINES){
-            meshBuffer = BufferManager.getBufferArrayObject(mesh.id.value + 10000);
-        }
-     
         const modelMatrix = this.transform.modelMatrix;
-        shader.setMat4("u_modelMatrix", modelMatrix);
+        const lightMatrix = Shadow.getLightMatrix();
 
-        gl.bindVertexArray(meshBuffer);
+        shader.setMat4("u_modelMatrix", modelMatrix);
+        shader.setMat4("u_lightSpaceMatrix", lightMatrix);
+
+        gl.bindVertexArray(vbo);
         gl.drawElements(WorldOptions.renderMode, mesh.triangles.length, mesh.indexDataType, 0);
         gl.bindVertexArray(null);
-       
     }
 }

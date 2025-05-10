@@ -3,22 +3,27 @@ import Quaternion from "../math/Quaternion";
 import Vector3 from "../math/Vector3";
 
 export default class Translation {
-    public static createTranslationByDirection(position: Vector3, rotation: Quaternion, newTranslation: Vector3, space: Space = Space.SELF): Vector3 {
+    public static createTranslationByDirection(
+        position: Vector3,
+        rotation: Quaternion,
+        translation: Vector3,
+        space: Space = Space.SELF
+    ): Vector3 {
         switch (space) {
             case Space.SELF:
-                const localTranslation = rotation.transformVector3(newTranslation);
+                const localTranslation = rotation.transformVector3(translation);
                 position.addInPlace(localTranslation);
                 break;
-        
+
             case Space.WORLD:
-                position = position.add(newTranslation);
+                position.addInPlace(translation);
                 break;
-            
+
             default:
                 console.error('Espaço de translação inválido. Use Space.SELF ou Space.WORLD.');
-                return position;
+                break;
         }
-        
+
         return position;
     }
 }

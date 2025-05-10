@@ -5,9 +5,9 @@ import Vector3 from "../math/Vector3";
 
 export default class Rotation {
 
-    public static createRotationByAxis(rotation: Quaternion, axis: Vector3, angle: number, space: Space = Space.SELF): void {
+    public static createRotationByAxis(rotation: Quaternion, axis: Vector3, angle: number, space: Space = Space.SELF) {
        
-        const normalizedAxis = axis.normalize(); 
+        const normalizedAxis = axis.normalized(); 
         const radians = Mathf.degToRad(angle);
     
         switch (space) {
@@ -24,24 +24,36 @@ export default class Rotation {
             
             default:
                 console.error('Espaço de rotação inválido. Use Space.SELF ou Space.WORLD.');
-                return;
+                break;
         }
+
+        return rotation;
     }
 
-    public static rotateAroundPoint(position: Vector3, rotation: Quaternion, point: Vector3, axis: Vector3, angle: number): void {
-          
-        const normalizedAxis = axis.normalize();
+    public static rotateAroundPoint(
+        position: Vector3,
+        rotation: Quaternion,
+        point: Vector3,
+        axis: Vector3,
+        angle: number
+    ): { rotation: Quaternion; position: Vector3 } {
+        
+        const normalizedAxis = axis.normalized();
         const radians = Mathf.degToRad(angle);
     
-        const offset = position.subtract(point);
+        const offset = position.subtract(point); 
     
         const rotationQuat = Quaternion.createRotationAxis(normalizedAxis, radians);
+    
         const rotatedOffset = rotationQuat.multiplyVector3(offset);
+        const newPosition = point.add(rotatedOffset);
+        const newRotation = rotationQuat.multiply(rotation).normalized();
     
-        position = point.add(rotatedOffset);
-    
-        rotation = rotationQuat.multiply(rotation).normalized();
-       
+        return {
+            rotation: newRotation,
+            position: newPosition,
+        };
     }
+    
     
 }

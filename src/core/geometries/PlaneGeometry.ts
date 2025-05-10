@@ -4,8 +4,8 @@ import Vector3 from "../math/Vector3";
 
 export default class PlaneGeometry {
     public static create(
-        width: number = 100,
-        depth: number = 100,
+        width: number = 20,
+        depth: number = 20,
         subdivisionsX: number = 200,
         subdivisionsZ: number = 100
     ): Mesh {

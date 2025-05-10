@@ -30,20 +30,6 @@
 
 //         const plane = GameObjectBuilder.createPlane();
 //         SceneManager.addGameObject(plane)
-
-
-//         // const cube = GameObjectBuilder.createCube();
-//         // cube.transform.position = new Vector3(0, 0 , 10);
-//         // cube.transform.scale = new Vector3(100, 100, 1);
-
-//         // SceneManager.addGameObject(cube)
-
-//         // for(let i = 0; i < 100; i++) {
-//         //     const cube = GameObjectBuilder.createCube();
-//         //     cube.transform.position = Vector3.random(-100, 100);
-//         //     SceneManager.addGameObject(cube)
-//         // }
-
 //     }
 
 //     private verticalInterpolation = 0.0;

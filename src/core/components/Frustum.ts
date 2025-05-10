@@ -4,7 +4,6 @@ import Plane from "./Plane";
 
 export default class Frustum {
     public planes: Plane[] = [];
-
     
     public containsBox(corners: Vector3[]): boolean {
         

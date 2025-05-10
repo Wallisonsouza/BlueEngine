@@ -1,9 +1,10 @@
 import Matrix4x4 from "./Matrix4x4";
 import Mathf from "./Mathf";
 import Vector4 from "./Vector4";
+import Quaternion from "./Quaternion";
 
 export default class Vector3 {
-    
+
     private xData: number = 0;
     private yData: number = 0;
     private zData: number = 0;
@@ -54,12 +55,12 @@ export default class Vector3 {
     
     public static readonly SIZE = 3;
     public static readonly one = new Vector3(1, 1, 1);
-    public static readonly UP = new Vector3(0, 1, 0);
-    public static readonly FORWARD = new Vector3(0, 0, 1);
-    public static readonly RIGHT = new Vector3(1, 0, 0);
-    public static readonly BACK = new Vector3(0, 0, -1);
-    public static readonly DOWN = new Vector3(0, -1, 0);
-    public static readonly LEFT = new Vector3(-1, 0, 0);
+    public static readonly up = new Vector3(0, 1, 0);
+    public static readonly forward = new Vector3(0, 0, 1);
+    public static readonly right = new Vector3(1, 0, 0);
+    public static readonly back = new Vector3(0, 0, -1);
+    public static readonly down = new Vector3(0, -1, 0);
+    public static readonly left = new Vector3(-1, 0, 0);
     public static readonly zero = new Vector3(0, 0, 0);
 
     public clone(){
@@ -72,6 +73,22 @@ export default class Vector3 {
         this.z = z;
         return this; 
     }
+
+    public normalizeInPlace() {
+        const length = this.length();
+        if (length < 1e-6) {
+            this.x = 0;
+            this.y = 0;
+            this.z = 0;
+            return this;
+        }
+
+        this.x /= length;
+        this.y /= length;
+        this.z /= length;
+        
+        return this;
+    }
  
     static random(min: number = 0, max: number = 1): Vector3 {
 
@@ -80,6 +97,9 @@ export default class Vector3 {
             Mathf.randomRange(min, max),
             Mathf.randomRange(min, max) 
         );
+    }
+    public static toQuat(x: number, y: number, z: number) {
+        return Quaternion.fromEulerAnglesVector3(new Vector3(x, y , z));
     }
 
     public static transform(vec: Vector3, m: Matrix4x4): Vector3 {
@@ -118,6 +138,7 @@ export default class Vector3 {
     add(vector: Vector3): Vector3 {
         return new Vector3(this.x + vector.x, this.y + vector.y, this.z + vector.z);
     }
+    
 
     public min(other: Vector3): Vector3 {
         this.x = Math.min(this.x, other.x);
@@ -152,6 +173,14 @@ export default class Vector3 {
         return new Vector3(this.x - vector.x, this.y - vector.y, this.z - vector.z);
     }
 
+    subtractInPlace(vector: Vector3): Vector3 {
+        this.x -= vector.x;
+        this.y -= vector.y;
+        this.z -= vector.z;
+        return this;
+    }
+    
+
     divide(vector: Vector3): Vector3 {
         const x = vector.x !== 0 ? this.x / vector.x : 0;
         const y = vector.y !== 0 ? this.y / vector.y : 0;
@@ -166,9 +195,19 @@ export default class Vector3 {
     multiplyScalar(scalar: number): Vector3 {
         return new Vector3(this.x * scalar, this.y * scalar, this.z * scalar);
     }
+
+    
     scale(scalar: number): Vector3 {
         return new Vector3(this.x * scalar, this.y * scalar, this.z * scalar);
     }
+
+    scaleInPlace(scalar: number): Vector3 {
+        this.x *= scalar;
+        this.y *= scalar;
+        this.z *= scalar;
+        return this;
+    }
+    
 
     magnitude(): number {
         return Mathf.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
@@ -211,6 +250,15 @@ export default class Vector3 {
         const z = start.z + (end.z - start.z) * t;
 
         return new Vector3(x, y, z);
+    }
+
+    public static center(min: Vector3, max: Vector3) {
+        return new Vector3(
+            (min.x + max.x) / 2,
+            (min.y + max.y) / 2,
+            (min.z + max.z) / 2
+          );
+          
     }
 
    
@@ -277,9 +325,9 @@ export default class Vector3 {
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }
 
-    public normalize(epsilon: number = 1e-6): this{
+    public get normalized(): this {
         const length = this.length();
-        if (length < epsilon) {
+        if (length < 1e-6) {
             this.x = 0;
             this.y = 0;
             this.z = 0;
@@ -356,6 +404,31 @@ export default class Vector3 {
     static max(a: Vector3, b: Vector3): Vector3 {
         return new Vector3(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z));
     }
+
+    static minArray(vectors: Vector3[]): Vector3 {
+        if (vectors.length === 0) throw new Error("Array vazio");
+    
+        return vectors.reduce((min, v) => 
+            new Vector3(
+                Math.min(min.x, v.x),
+                Math.min(min.y, v.y),
+                Math.min(min.z, v.z)
+            )
+        );
+    }
+    
+    static maxArray(vectors: Vector3[]): Vector3 {
+        if (vectors.length === 0) throw new Error("Array vazio");
+    
+        return vectors.reduce((max, v) => 
+            new Vector3(
+                Math.max(max.x, v.x),
+                Math.max(max.y, v.y),
+                Math.max(max.z, v.z)
+            )
+        );
+    }
+    
     
     
     public static applyMin(v: Vector3, minValue: number): Vector3 {
